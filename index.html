@@ -162,6 +162,7 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
 .verdict{border-radius:12px;padding:12px 14px;font-size:18px;line-height:1.5}
 .verdict b{font-family:var(--display);font-weight:400;font-size:26px;display:block}
 .verdict.good{background:rgba(43,214,123,.15);border:1px solid var(--good)}
+.verdict.maybe{background:rgba(255,201,64,.12);border:1px solid var(--gold)}
 .verdict.bad{background:rgba(255,90,90,.15);border:1px solid var(--bad)}
 
 /* ---------- ניצחון ---------- */
@@ -563,7 +564,7 @@ function reveal(timeUp) {
     acts(`${timeUp === true ? `<span style="flex-basis:100%">⏰ נגמר הזמן! <span class="${cls[G.buzzer]}">${heb[G.buzzer]}</span> הספיק לענות נכון?</span>` : ""}
       <button class="act good big" data-a="good">✓ נכון</button>
       <button class="act bad big" data-a="bad">✗ טעות</button>
-      ${sampleFn ? `<button class="act judge" data-a="judge">⚖️ שופט</button>` : ""}`);
+      <button class="act judge" data-a="judge">⚖️ שופט</button>`);
   } else {
     G.phase = "nobody";
     acts(`אף אחד לא ידע, אין נקודה. <button class="act big" data-a="next">לתמונה הבאה ←</button>`);
@@ -609,7 +610,7 @@ document.addEventListener("keydown", (e) => {
   if (e.code === "Space" || e.key === " ") { e.preventDefault(); return G.phase === "nobody" ? nextRound() : reveal(); }
   if (e.code === "KeyB" || e.key === "נ") return score(true);
   if (e.code === "KeyY" || e.key === "ט") return score(false);
-  if ((e.code === "KeyJ" || e.key === "ח") && sampleFn) return openJudge();
+  if (e.code === "KeyJ" || e.key === "ח") return openJudge();
 });
 
 // ---------- שופט (Claude) ----------
@@ -628,17 +629,59 @@ function openJudge() {
 function closeJudge() { $("judge").hidden = true; if (G.phase === "judging") G.phase = "revealed"; }
 function verdict(ok, reason) {
   const res = $("jRes");
-  res.className = "verdict " + (ok ? "good" : "bad");
+  const maybe = ok === "maybe";
+  res.hidden = false;
+  res.className = "verdict " + (maybe ? "maybe" : ok ? "good" : "bad");
   res.innerHTML = `<b></b><span></span><div class="note" style="margin-top:6px"></div>`;
-  res.querySelector("b").textContent = ok ? "✓ נחשב" : "✗ לא נחשב";
+  res.querySelector("b").textContent = maybe ? "🤔 אולי" : ok ? "✓ נחשב" : "✗ לא נחשב";
   res.querySelector("span").textContent = reason;
-  res.querySelector(".note").textContent = "סגרו ולחצו " + (ok ? "נכון" : "טעות");
+  res.querySelector(".note").textContent = maybe ? "תחליטו ביחד, ואז סגרו ולחצו נכון או טעות" : "סגרו ולחצו " + (ok ? "נכון" : "טעות");
+}
+
+// ---------- שופט חכם בלי Claude ----------
+// מקבל שגיאות כתיב קטנות, כתיב מלא/חסר (ו, י, א), אותיות סופיות, "ה" בהתחלה ומילים מיותרות כמו "זה".
+// אם אמרו רק חלק מהשם — אומר "אולי" ומסביר, כי רק מי שמבין יודע אם זה שם קצר מוכר או כללי מדי.
+const FINALS = { "ך": "כ", "ם": "מ", "ן": "נ", "ף": "פ", "ץ": "צ" };
+const FILLERS = new Set(["זה", "זאת", "זו", "של", "את", "זהו", "זוהי", "the"]);
+const jWords = (s) => String(s || "").toLowerCase()
+  .replace(/[\u0591-\u05C7]/g, "").replace(/[ךםןףץ]/g, (c) => FINALS[c])
+  .replace(/[״"'׳`’\-–_.,!?():;]/g, " ").split(/\s+/)
+  .filter((w) => w && !FILLERS.has(w)).map((w) => w.replace(/^ה(?=.{3,})/, ""));
+const jFlat = (s) => jWords(s).join("");
+const jSkel = (s) => jFlat(s).replace(/(?!^)[אויע]/g, "").replace(/(.)\1+/g, "$1");
+function lev(a, b) {
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++)
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[a.length][b.length];
+}
+const tol = (n) => (n <= 3 ? 0 : n <= 6 ? 1 : 2);
+function localJudge(said, cands) {
+  const A = jFlat(said), SA = jSkel(said), wa = jWords(said);
+  if (!A) return null;
+  let maybe = null;
+  for (const c of cands) {
+    const B = jFlat(c), SB = jSkel(c), wb = jWords(c);
+    if (!B) continue;
+    if (A === B) return { ok: true, reason: "זה בדיוק אחד מהשמות שנחשבים נכון." };
+    if (lev(A, B) <= tol(B.length)) return { ok: true, reason: `רק שגיאת כתיב קטנה. התשובה: "${c}".` };
+    if (B.length >= 4 && SA === SB) return { ok: true, reason: `אותה מילה בכתיב קצת אחר. התשובה: "${c}".` };
+    if (B.length >= 3 && A.includes(B)) return { ok: true, reason: `אמרתם את התשובה ("${c}") עם עוד כמה מילים.` };
+    const part = (A.length >= 3 && B.includes(A)) || (wa.length && wa.every((w) => wb.some((x) => x === w || (w.length >= 4 && lev(w, x) <= 1))));
+    if (part && !maybe) maybe = c;
+  }
+  if (maybe) return { ok: "maybe", reason: `אמרתם רק חלק מהשם "${maybe}". אם זה שם קצר שכולם משתמשים בו ומתאים רק לזה (כמו "מילאן") — נחשב. אם זה כללי מדי (כמו "סלט" במקום "סלט יווני") — לא נחשב.` };
+  return { ok: false, reason: "זה לא דומה לתשובה או לשמות שנחשבים. אם אתם בטוחים שזה שם אחר של אותו דבר — תחליטו ביחד." };
 }
 async function runJudge() {
   const said = $("jSaid").value.trim();
   if (!said) return $("jSaid").focus();
   const res = $("jRes");
-  if ([G.item.a, ...(G.item.alt || [])].some((x) => norm(x) === norm(said))) return (res.hidden = false, verdict(true, "זה בדיוק אחד מהשמות שנחשבים נכון."));
+  const local = localJudge(said, [G.item.a, ...(G.item.alt || [])]);
+  if (!local) return $("jSaid").focus();
+  // בטוח שנחשב, או שאין Claude (באפליקציה) — השופט החכם מחליט לבד
+  if (local.ok === true || !sampleFn) return verdict(local.ok, local.reason);
   res.className = "verdict"; res.hidden = false; res.textContent = "השופט חושב…";
   $("jGo").disabled = true;
   try {
