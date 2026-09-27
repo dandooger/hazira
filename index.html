@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/favicon.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<script>window.HAZIRA_IS_APP = true; window.HAZIRA_VERSION = "1790539541708";</script>
+<script>window.HAZIRA_IS_APP = true; window.HAZIRA_VERSION = "1790545633039";</script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
 <body>
@@ -312,7 +312,7 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
   </div>
   <div class="soloBar" id="soloBar" hidden>
     <div class="ok"><b id="soloOk">0</b><span id="soloOkLbl">נכונות מתוך 10</span></div>
-    <div class="no"><b id="soloNo">0</b><span id="soloNoLbl">טעויות מתוך 6</span></div>
+    <div class="no"><b id="soloNo">0</b><span id="soloNoLbl">טעויות · מותר עד 5</span></div>
   </div>
   <div class="buzzers" id="buzzers"></div>
 </section>
@@ -411,10 +411,12 @@ fetch("data/index.json").then((r) => r.json()).then((cats) => {
 // ---------- מצבי משחק ----------
 let mode = "duo";
 const IS_APP = !!window.HAZIRA_IS_APP;
+// לבד: מותר לטעות עד חצי ממספר הנכונות. טעות אחת מעבר לחצי — נפסלים (14 → 7 מותר, 8 פוסל)
+const soloOut = (t) => Math.floor(t / 2) + 1;
 const MODE_NOTE = {
   duo: () => `שימו את הטלפון באמצע השולחן: ${Math.ceil(players / 2)} מצד אחד ו-${Math.floor(players / 2)} מהצד השני. יש שתי תמונות, אחת הפוכה בשביל מי שיושב ממול.`
     + (players === 2 ? "" : " נכון = נקודה למי שענה. טעות = יורדת לו נקודה."),
-  solo: () => `משחק לבד: ${target + 5} תמונות, צריך ${target} נכונות. ${6} טעויות ואתה בחוץ! עונים במיקרופון 🎤 או בהקלדה.`,
+  solo: () => `משחק לבד: צריך ${target} נכונות. מותר לטעות עד חצי (${soloOut(target) - 1}), והטעות ה-${soloOut(target)} פוסלת! עונים במיקרופון 🎤 או בהקלדה.`,
   online: IS_APP ? "כל אחד משחק מהטלפון שלו. מי שלוחץ ראשון עונה במיקרופון 🎤 או בהקלדה, והשופט בודק." : "מצב אונליין עובד רק באפליקציה (לחצו \"התקן אפליקציה\" למעלה).",
 };
 function paintMode() {
@@ -1036,7 +1038,8 @@ function startSolo(deck) {
   setPanels("solo");
   G.deck = deck; G.round = 0;
   const all = deckOrder(deck.items, deck.reserve);
-  G.solo = { total: target + 5, need: target, maxWrong: 6, ok: 0, no: 0 };
+  const out = soloOut(target);
+  G.solo = { total: target + out - 1, need: target, maxWrong: out, ok: 0, no: 0 };
   G.queue = all.slice(0, G.solo.total);
   $("gTitle").textContent = deck.icon + " " + deck.name + " · " + deck.levelName + " · לבד";
   paintSolo(); show("game"); keepAwake(); soloNext();
@@ -1044,7 +1047,7 @@ function startSolo(deck) {
 function paintSolo() {
   const s = G.solo;
   $("soloOk").textContent = s.ok; $("soloNo").textContent = s.no;
-  $("soloOkLbl").textContent = "נכונות מתוך " + s.need; $("soloNoLbl").textContent = "טעויות מתוך " + s.maxWrong;
+  $("soloOkLbl").textContent = "נכונות מתוך " + s.need; $("soloNoLbl").textContent = "טעויות · מותר עד " + (s.maxWrong - 1);
 }
 function soloNext() {
   const s = G.solo;
