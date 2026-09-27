@@ -1,6 +1,6 @@
 {
-  "name": "הזירה · ראש בראש",
-  "short_name": "הזירה",
+  "name": "הצ'יטה · ראש בראש",
+  "short_name": "הצ'יטה",
   "lang": "he",
   "dir": "rtl",
   "start_url": "./",
@@ -10,8 +10,8 @@
     "fullscreen",
     "standalone"
   ],
-  "background_color": "#0A0F24",
-  "theme_color": "#0A0F24",
+  "background_color": "#FFC400",
+  "theme_color": "#FFC400",
   "icons": [
     {
       "src": "icons/icon-192.png",
