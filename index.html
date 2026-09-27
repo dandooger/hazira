@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/favicon.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<script>window.HAZIRA_IS_APP = true; window.HAZIRA_VERSION = "1790530572748";</script>
+<script>window.HAZIRA_IS_APP = true; window.HAZIRA_VERSION = "1790534626952";</script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
 <body>
@@ -25,6 +25,7 @@
   --ink:#F2F4FF; --muted:#8B94C6;
   --blue:#2F7BFF; --blue-deep:#123C8C; --red:#FF3B4A; --red-deep:#8C1520;
   --gold:#FFC940; --good:#2BD67B; --bad:#FF5A5A;
+  --green:#1FB45A; --green-deep:#0B5229; --yellow:#E8A800; --yellow-deep:#6E4F00; --purple:#9B5CFF; --purple-deep:#44198C;
   --display:"Secular One","Arial Hebrew",Arial,sans-serif;
   --body:"Assistant","Segoe UI",Arial,sans-serif;
   color-scheme:dark;
@@ -54,6 +55,7 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
 .how div{background:var(--stage);border:1px solid var(--line);border-radius:12px;padding:12px 14px;line-height:1.5;color:var(--muted);font-size:15px}
 .how b{color:var(--ink)}
 .bl{color:var(--blue);font-weight:800}.rd{color:var(--red);font-weight:800}
+.gr{color:var(--green);font-weight:800}.yl{color:var(--yellow);font-weight:800}.pu{color:var(--purple);font-weight:800}
 .target{display:flex;align-items:center;gap:10px;background:var(--stage);border:1px solid var(--line);border-radius:999px;padding:5px 7px}
 .target button{width:40px;height:40px;border-radius:50%;border:0;background:var(--panel);font-size:22px}
 .target output{font-family:var(--display);font-size:26px;min-width:2ch;text-align:center;color:var(--gold)}
@@ -144,19 +146,33 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
 .act.judge{border-color:var(--gold)}
 .act.big{flex:1 1 40%}
 
-/* שני כפתורי הלחיצה הגדולים */
-.buzzers{direction:ltr;display:grid;grid-template-columns:1fr 1fr;gap:10px;height:clamp(130px,24vh,210px)}
+/* כפתורי הלחיצה הגדולים (2 עד 5 שחקנים; באונליין — כפתור אחד על כל הרוחב) */
+.buzzers{direction:ltr;display:grid;grid-template-columns:repeat(var(--n,2),1fr);gap:10px;height:clamp(130px,24vh,210px)}
+.buzzers.top{transform:rotate(180deg)}
+.stage.mirror{transform:rotate(180deg)}
+#game.multi .buzz .score{font-size:clamp(34px,10vw,60px)}
+#game.multi .buzz .who{font-size:17px}
+#game.two-sides .buzzers{height:clamp(84px,13vh,130px)}
+#game.two-sides .buzz .score{font-size:clamp(28px,8vw,46px)}
+#game.two-sides .buzz .tap{display:none}
+#game.two-sides{grid-template-rows:auto auto minmax(0,1fr) auto minmax(0,1fr) auto;grid-template-areas:"tb" "bt" "s2" "ac" "s1" "bb"}
+#game.two-sides .topbar{grid-area:tb}#game.two-sides #buzzersTop{grid-area:bt}#game.two-sides #stage2{grid-area:s2}
+#game.two-sides .acts{grid-area:ac}#game.two-sides #stage{grid-area:s1}#game.two-sides #buzzers{grid-area:bb}
+.buzz .vs{font-family:var(--display);font-size:19px;opacity:.9}
 .buzz{border:3px solid transparent;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;direction:rtl;
   user-select:none;-webkit-user-select:none;touch-action:manipulation;transition:box-shadow .15s,transform .1s,opacity .2s;padding:8px}
 .buzz.blue{background:linear-gradient(180deg,var(--blue),var(--blue-deep))}
 .buzz.red{background:linear-gradient(180deg,var(--red),var(--red-deep))}
+.buzz.green{background:linear-gradient(180deg,var(--green),var(--green-deep));--pc:var(--green)}
+.buzz.yellow{background:linear-gradient(180deg,var(--yellow),var(--yellow-deep));--pc:var(--yellow)}
+.buzz.purple{background:linear-gradient(180deg,var(--purple),var(--purple-deep));--pc:var(--purple)}
 .buzz:active{transform:scale(.97)}
 .buzz .who{font-family:var(--display);font-size:20px}
 .buzz .score{font-family:var(--display);font-size:clamp(48px,15vw,84px);line-height:1;font-variant-numeric:tabular-nums}
 .buzz .bar{width:70%;height:8px;border-radius:4px;background:rgba(255,255,255,.2);overflow:hidden}
 .buzz .bar i{display:block;height:100%;width:0;background:var(--ink);transition:width .4s}
 .buzz .tap{font-size:13px;opacity:.85}
-.buzz.on{border-color:var(--ink);box-shadow:0 0 40px currentColor}
+.buzz.on{border-color:var(--ink);box-shadow:0 0 40px var(--pc,currentColor)}
 .buzz.on.blue{color:var(--ink);box-shadow:0 0 40px var(--blue)}
 .buzz.on.red{color:var(--ink);box-shadow:0 0 40px var(--red)}
 .buzz.off{opacity:.35}
@@ -165,14 +181,17 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
 
 /* טלפון לרוחב / טאבלט / מחשב: הכפתורים בצדדים, התמונה באמצע */
 @media (orientation:landscape) and (min-width:560px){
-  #game{grid-template-rows:auto minmax(0,1fr) auto;grid-template-columns:minmax(120px,1fr) minmax(0,3fr) minmax(120px,1fr);gap:10px}
-  .topbar{grid-column:1/-1}
-  .stage{grid-column:2;grid-row:2}
-  .acts{grid-column:1/-1;grid-row:3}
-  .buzzers{display:contents}
-  .buzz.blue{grid-column:1;grid-row:2}
-  .ansbox,.soloBar{grid-column:1/-1}
-  .buzz.red{grid-column:3;grid-row:2}
+  #game:not(.multi){grid-template-rows:auto minmax(0,1fr) auto;grid-template-columns:minmax(120px,1fr) minmax(0,3fr) minmax(120px,1fr);gap:10px}
+  #game:not(.multi) .topbar{grid-column:1/-1}
+  #game:not(.multi) .stage{grid-column:2;grid-row:2}
+  #game:not(.multi) .acts{grid-column:1/-1;grid-row:3}
+  #game:not(.multi) .buzzers{display:contents}
+  #game:not(.multi) .buzz.blue{grid-column:1;grid-row:2}
+  #game:not(.multi) .ansbox,#game:not(.multi) .soloBar{grid-column:1/-1}
+  #game:not(.multi) .buzz.red{grid-column:3;grid-row:2}
+  #game.one:not(.multi){grid-template-columns:minmax(0,3fr) minmax(160px,1.3fr)}
+  #game.one:not(.multi) .stage{grid-column:1}
+  #game.one:not(.multi) .buzz{grid-column:2!important;grid-row:2}
 }
 
 /* ---------- שופט ---------- */
@@ -214,10 +233,14 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
   <div class="row">
     <h2>מצב</h2>
     <div class="modes" id="modes">
-      <button class="mode" data-m="duo" aria-pressed="true"><b>👥 שניים</b><span>שניים על טלפון אחד</span></button>
+      <button class="mode" data-m="duo" aria-pressed="true"><b>👥 ביחד</b><span>2 עד 5 על טלפון אחד</span></button>
       <button class="mode" data-m="solo" aria-pressed="false"><b>🙋 לבד</b><span>נגד השעון</span></button>
       <button class="mode" data-m="online" aria-pressed="false" id="modeOnline"><b>🌐 אונליין</b><span>כל אחד מהטלפון שלו</span></button>
     </div>
+  </div>
+  <div class="row" id="playersRow">
+    <h2>כמה שחקנים</h2>
+    <div class="target"><button id="pMinus" aria-label="פחות">−</button><output id="pVal">2</output><button id="pPlus" aria-label="יותר">+</button></div>
   </div>
   <div class="note" id="modeNote"></div>
   <div class="joinbox" id="joinBox" hidden>
@@ -228,9 +251,9 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
   </div>
 
   <div class="row">
-    <h2>משחקים עד</h2>
+    <h2 id="tLbl">משחקים עד</h2>
     <div class="target"><button id="tMinus" aria-label="פחות">−</button><output id="tVal">10</output><button id="tPlus" aria-label="יותר">+</button></div>
-    <span class="note">נקודות</span>
+    <span class="note" id="tUnit">נקודות</span>
   </div>
 
   <div class="row">
@@ -271,6 +294,9 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
     <div class="title"><span id="gTitle"></span><small id="gRound"></small></div>
     <button class="ghost" id="quit">יציאה</button>
   </div>
+  <!-- 4-5 שחקנים: שורת כפתורים ותמונה הפוכות, בשביל מי שיושב מול הטלפון -->
+  <div class="buzzers top" id="buzzersTop" hidden></div>
+  <div class="stage mirror" id="stage2" hidden aria-hidden="true"></div>
   <div class="stage hide" id="stage">
     <div class="pic" id="picWrap"><img id="pic" alt=""><div class="emo" id="emo" hidden></div></div>
     <div class="timer" id="timer" hidden></div>
@@ -287,14 +313,7 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
     <div class="ok"><b id="soloOk">0</b><span id="soloOkLbl">נכונות מתוך 10</span></div>
     <div class="no"><b id="soloNo">0</b><span id="soloNoLbl">טעויות מתוך 6</span></div>
   </div>
-  <div class="buzzers" id="buzzers">
-    <button class="buzz blue" id="bBlue" aria-label="כחול לוחץ">
-      <span class="who">כחול</span><span class="score" id="scBlue">0</span><span class="bar"><i id="barBlue"></i></span><span class="tap">לחץ!</span>
-    </button>
-    <button class="buzz red" id="bRed" aria-label="אדום לוחץ">
-      <span class="who">אדום</span><span class="score" id="scRed">0</span><span class="bar"><i id="barRed"></i></span><span class="tap">לחץ!</span>
-    </button>
-  </div>
+  <div class="buzzers" id="buzzers"></div>
 </section>
 
 <!-- שופט -->
@@ -322,7 +341,7 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
   <canvas id="confetti"></canvas>
   <div style="position:relative">
     <h2 id="winTxt"></h2>
-    <div class="final"><span class="b" id="fBlue"></span> : <span class="r" id="fRed"></span></div>
+    <div class="final" id="final"></div>
     <div class="row" style="justify-content:center"><button class="go" id="again">עוד משחק</button><button class="ghost" id="toMenu">קטגוריה אחרת</button></div>
   </div>
 </section>
@@ -334,6 +353,7 @@ const show = (id) => { for (const s of ["home", "loading", "lobby", "game", "ove
 // ---------- צלילים ----------
 let ac;
 function beep(freq, dur = .15, type = "sine", vol = .25, when = 0) {
+  if (document.hidden) return; // האפליקציה ברקע או שהמסך כבוי — שקט
   try {
     ac = ac || new (window.AudioContext || window.webkitAudioContext)();
     if (ac.state === "suspended") ac.resume();
@@ -346,20 +366,28 @@ function beep(freq, dur = .15, type = "sine", vol = .25, when = 0) {
 const sfx = {
   tick: () => beep(660, .12, "square", .12),
   go: () => beep(990, .3, "square", .15),
-  buzzBlue: () => { beep(330, .35, "sawtooth", .2); beep(440, .35, "sawtooth", .12, .05); },
-  buzzRed: () => { beep(262, .35, "sawtooth", .2); beep(392, .35, "sawtooth", .12, .05); },
+  buzz: (k) => { const f = { blue: 330, red: 262, green: 392, yellow: 294, purple: 440 }[k] || 330; beep(f, .35, "sawtooth", .2); beep(f * 1.33, .35, "sawtooth", .12, .05); },
   good: () => { beep(660, .12, "triangle", .3); beep(880, .12, "triangle", .3, .12); beep(1320, .25, "triangle", .3, .24); },
   bad: () => beep(200, .45, "sawtooth", .22),
   win: () => [523, 659, 784, 1047].forEach((f, i) => beep(f, .35, "triangle", .3, i * .15)),
 };
 const buzzVibrate = () => { try { navigator.vibrate && navigator.vibrate(60); } catch (e) {} };
+// יוצאים מהאפליקציה או מכבים מסך — הצלילים והמיקרופון נעצרים. חוזרים — המיקרופון חוזר אם באמצע תשובה
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) { try { ac && ac.suspend(); } catch (e) {} stopListening(); }
+  else if (onAnswer && SR && IS_APP) { listenWanted = true; listenRestarts = 0; startListening(); }
+});
 
 // ---------- בית ----------
 let target = 10, level = "medium";
 const LEVEL_NAME = { easy: "קל", medium: "בינוני", hard: "קשה" };
-const setTarget = (v) => { target = Math.max(3, Math.min(30, v)); $("tVal").value = target; $("tVal").textContent = target; };
+const setTarget = (v) => { target = Math.max(3, Math.min(30, v)); $("tVal").value = target; $("tVal").textContent = target; paintMode(); };
 $("tMinus").onclick = () => setTarget(target - 1);
 $("tPlus").onclick = () => setTarget(target + 1);
+let players = 2;
+const setPlayers = (v) => { players = Math.max(2, Math.min(5, v)); $("pVal").value = players; $("pVal").textContent = players; paintMode(); };
+$("pMinus").onclick = () => setPlayers(players - 1);
+$("pPlus").onclick = () => setPlayers(players + 1);
 $("levels").addEventListener("click", (e) => {
   const b = e.target.closest(".lv"); if (!b) return;
   level = b.dataset.lv;
@@ -383,7 +411,8 @@ fetch("data/index.json").then((r) => r.json()).then((cats) => {
 let mode = "duo";
 const IS_APP = !!window.HAZIRA_IS_APP;
 const MODE_NOTE = {
-  duo: "",
+  duo: () => players === 2 ? "" : `${players} שחקנים על טלפון אחד. מי שלוחץ ראשון עונה בקול. נכון = נקודה לו. טעות = יורדת לו נקודה.`
+    + (players >= 4 ? " שימו את הטלפון באמצע השולחן: יש שתי תמונות, אחת הפוכה בשביל מי שיושב ממול." : ""),
   solo: () => `משחק לבד: ${target + 5} תמונות, צריך ${target} נכונות. ${6} טעויות ואתה בחוץ! עונים במיקרופון 🎤 או בהקלדה.`,
   online: IS_APP ? "כל אחד משחק מהטלפון שלו. מי שלוחץ ראשון עונה במיקרופון 🎤 או בהקלדה, והשופט בודק." : "מצב אונליין עובד רק באפליקציה (לחצו \"התקן אפליקציה\" למעלה).",
 };
@@ -391,6 +420,9 @@ function paintMode() {
   document.querySelectorAll(".mode").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.m === mode)));
   const n = MODE_NOTE[mode]; $("modeNote").textContent = typeof n === "function" ? n() : n; $("modeNote").hidden = !$("modeNote").textContent;
   $("joinBox").hidden = !(mode === "online" && IS_APP);
+  $("playersRow").hidden = mode !== "duo";
+  $("tLbl").textContent = mode === "solo" ? "כמה נכונות צריך" : "משחקים עד";
+  $("tUnit").textContent = mode === "solo" ? "תשובות נכונות" : "נקודות";
 }
 $("modes").addEventListener("click", (e) => { const b = e.target.closest(".mode"); if (!b) return; mode = b.dataset.m; paintMode(); });
 paintMode();
@@ -440,10 +472,20 @@ async function loadCategory(c) {
 }
 
 // ---------- משחק ----------
-const G = { deck: null, queue: [], reserve: [], item: null, score: { blue: 0, red: 0 }, round: 0, phase: "idle", buzzer: null, timers: [] };
+const G = { deck: null, queue: [], reserve: [], item: null, score: { blue: 0, red: 0 }, players: ["blue", "red"], round: 0, phase: "idle", buzzer: null, timers: [] };
+const PLAYERS = [
+  { k: "blue", name: "כחול", heb: "הכחול", cls: "bl" },
+  { k: "red", name: "אדום", heb: "האדום", cls: "rd" },
+  { k: "green", name: "ירוק", heb: "הירוק", cls: "gr" },
+  { k: "yellow", name: "צהוב", heb: "הצהוב", cls: "yl" },
+  { k: "purple", name: "סגול", heb: "הסגול", cls: "pu" },
+];
 const other = (p) => (p === "blue" ? "red" : "blue");
-const heb = { blue: "הכחול", red: "האדום" };
-const cls = { blue: "bl", red: "rd" };
+const heb = Object.fromEntries(PLAYERS.map((p) => [p.k, p.heb]));
+const cls = Object.fromEntries(PLAYERS.map((p) => [p.k, p.cls]));
+const pname = Object.fromEntries(PLAYERS.map((p) => [p.k, p.name]));
+const cap = (k) => k[0].toUpperCase() + k.slice(1);
+const btn = (k) => $("b" + cap(k));
 const shuffle = (a) => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const later = (fn, ms) => G.timers.push(setTimeout(fn, ms));
 const clearTimers = () => { G.timers.forEach(clearTimeout); G.timers = []; };
@@ -452,16 +494,56 @@ let wakeLock = null;
 async function keepAwake() { try { wakeLock = await navigator.wakeLock.request("screen"); } catch (e) {} }
 document.addEventListener("visibilitychange", () => { if (!document.hidden && !$("game").hidden) keepAwake(); });
 
-function setPanels(m) {
-  G.mode = m;
-  $("buzzers").hidden = m === "solo"; $("soloBar").hidden = m !== "solo"; $("ansBox").hidden = true;
-  document.querySelectorAll(".buzz").forEach((b) => b.classList.remove("dim"));
-  $("bBlue").querySelector(".who").textContent = "כחול"; $("bRed").querySelector(".who").textContent = "אדום";
+// בונה כפתור לכל שחקן. 4-5 שחקנים: חצי מהכפתורים למעלה והפוכים, ותמונה שנייה הפוכה
+function buildBuzzers(keys) {
+  const two = keys.length >= 4;
+  const bottom = two ? keys.slice(0, Math.ceil(keys.length / 2)) : keys, top = two ? keys.slice(bottom.length) : [];
+  const make = (k) => {
+    const p = PLAYERS.find((x) => x.k === k), C = cap(k);
+    const b = document.createElement("button");
+    b.className = "buzz " + k; b.id = "b" + C; b.setAttribute("aria-label", p.name + " לוחץ");
+    b.innerHTML = `<span class="who">${p.name}</span><span class="score" id="sc${C}">0</span><span class="bar"><i id="bar${C}"></i></span><span class="vs" hidden></span><span class="tap">לחץ!</span>`;
+    b.addEventListener("pointerdown", (e) => { e.preventDefault(); if (G.mode === "online") onlineBuzz(); else buzz(k); });
+    return b;
+  };
+  $("buzzers").replaceChildren(...bottom.map(make)); $("buzzers").style.setProperty("--n", Math.max(1, bottom.length));
+  $("buzzersTop").replaceChildren(...top.map(make)); $("buzzersTop").style.setProperty("--n", Math.max(1, top.length));
+  $("buzzersTop").hidden = $("stage2").hidden = !two;
+  $("game").classList.toggle("multi", keys.length > 2);
+  $("game").classList.toggle("two-sides", two);
+  $("game").classList.toggle("one", keys.length === 1);
+  syncMirror();
 }
+function setPanels(m, keys) {
+  G.mode = m; G.players = keys || [];
+  buildBuzzers(G.players);
+  $("buzzers").hidden = m === "solo"; $("soloBar").hidden = m !== "solo"; $("ansBox").hidden = true;
+}
+
+// התמונה ההפוכה: עותק של הבמה שמתעדכן לבד. מעתיקים רק מה שהשתנה, כדי שאנימציות לא יתחילו מחדש
+let mirrorHtml = [];
+function syncMirror() {
+  const m = $("stage2");
+  if (m.hidden) { if (mirrorHtml.length) { m.replaceChildren(); mirrorHtml = []; } return; }
+  m.className = $("stage").className + " mirror";
+  const src = [...$("stage").children].map((n) => n.outerHTML.replace(/\sid="[^"]*"/g, ""));
+  const kids = [...m.children];
+  src.forEach((h, i) => {
+    if (mirrorHtml[i] === h && kids[i]) return;
+    const t = document.createElement("template"); t.innerHTML = h;
+    if (kids[i]) kids[i].replaceWith(t.content.firstChild); else m.append(t.content.firstChild);
+  });
+  kids.slice(src.length).forEach((n) => n.remove());
+  mirrorHtml = src;
+}
+new MutationObserver(() => syncMirror())
+  .observe($("stage"), { subtree: true, childList: true, attributes: true, characterData: true });
+
 function startGame(deck) {
-  setPanels("duo");
+  const keys = PLAYERS.slice(0, players).map((p) => p.k);
+  setPanels("duo", keys);
   G.deck = deck; G.queue = freshFirst(deck.items); G.reserve = freshFirst(deck.reserve);
-  G.score = { blue: 0, red: 0 }; G.round = 0;
+  G.score = Object.fromEntries(keys.map((k) => [k, 0])); G.round = 0;
   $("gTitle").textContent = deck.icon + " " + deck.name + " · " + deck.levelName;
   paintScore();
   show("game");
@@ -470,13 +552,14 @@ function startGame(deck) {
 }
 
 function paintScore() {
-  $("scBlue").textContent = G.score.blue; $("scRed").textContent = G.score.red;
-  $("barBlue").style.width = Math.min(100, G.score.blue / target * 100) + "%";
-  $("barRed").style.width = Math.min(100, G.score.red / target * 100) + "%";
+  for (const k of G.players) {
+    $("sc" + cap(k)).textContent = G.score[k];
+    $("bar" + cap(k)).style.width = Math.min(100, G.score[k] / target * 100) + "%";
+  }
 }
 function setSides(on) {
-  for (const p of ["blue", "red"]) {
-    const el = $(p === "blue" ? "bBlue" : "bRed");
+  for (const p of G.players) {
+    const el = btn(p); if (!el) continue;
     el.classList.toggle("on", on === p);
     el.classList.toggle("off", !!on && on !== p);
   }
@@ -679,10 +762,10 @@ function stopAnswerTimer() {
 }
 
 function buzz(p) {
-  if (G.phase !== "open") return;
+  if (G.phase !== "open" || !G.players.includes(p)) return;
   G.buzzer = p; G.phase = "answering";
   setSides(p);
-  sfx[p === "blue" ? "buzzBlue" : "buzzRed"](); buzzVibrate();
+  sfx.buzz(p); buzzVibrate();
   acts(`<span><span class="${cls[p]}">${heb[p]}</span> ראשון! תגיד את התשובה.</span>
     <button class="act big" data-a="reveal">👀 תראו תשובה</button>`);
   startAnswerTimer(p);
@@ -712,28 +795,28 @@ function reveal(timeUp) {
 function score(correct) {
   if (G.phase !== "revealed") return;
   G.phase = "scored";
-  const winner = correct ? G.buzzer : other(G.buzzer);
-  G.score[winner]++;
+  // שניים: טעות = נקודה ליריב. 3 ומעלה: טעות = יורדת נקודה למי שענה
+  const two = G.players.length === 2;
+  const winner = correct ? G.buzzer : two ? other(G.buzzer) : null, loser = winner ? null : G.buzzer;
+  const lost = loser && G.score[loser] > 0;
+  if (winner) G.score[winner]++; else if (lost) G.score[loser]--;
   paintScore();
-  const side = $(winner === "blue" ? "bBlue" : "bRed");
+  const side = btn(winner || loser);
   side.classList.remove("pop"); void side.offsetWidth; side.classList.add("pop");
-  const f = document.createElement("div");
-  f.className = "flash " + (correct ? "good" : "bad");
-  f.textContent = correct ? "✓ נכון!" : "✗ טעות";
-  $("stage").append(f);
-  (correct ? sfx.good : sfx.bad)();
-  acts(`נקודה ל<span class="${cls[winner]}">${heb[winner]}</span>!`);
-  if (G.score[winner] >= target) later(() => gameOver(winner), 1300);
+  flash(correct);
+  acts(winner ? `נקודה <span class="${cls[winner]}">ל${pname[winner]}</span>!`
+    : lost ? `<span class="${cls[loser]}">ל${pname[loser]}</span> יורדת נקודה.` : `אין נקודה <span class="${cls[loser]}">ל${pname[loser]}</span>.`);
+  if (winner && G.score[winner] >= target) later(() => gameOver(winner), 1300);
   else later(nextRound, 1500);
 }
 
-// כפתורי הלחיצה: pointerdown כדי שזה יהיה הכי מהר שאפשר
-$("bBlue").addEventListener("pointerdown", (e) => { e.preventDefault(); if (G.mode === "online") onlineBuzz(); else buzz("blue"); });
-$("bRed").addEventListener("pointerdown", (e) => { e.preventDefault(); if (G.mode === "online") onlineBuzz(); else buzz("red"); });
+// כפתורי הלחיצה נבנים ב-buildBuzzers (עם pointerdown, כדי שזה יהיה הכי מהר שאפשר)
 $("acts").addEventListener("click", (e) => {
   const b = e.target.closest("[data-a]"); if (!b) return;
   const a = b.dataset.a;
   if (a === "soloSkip") return soloAnswer("");
+  if (a === "dunno") return onlineDunno();
+  if (a === "ready") return onlineReady();
   if (a === "decideYes") return onlineDecide(true);
   if (a === "decideNo") return onlineDecide(false);
   if (a === "reveal") reveal();
@@ -877,37 +960,48 @@ $("jSaid").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preve
 
 // ---------- תשובה במיקרופון / בהקלדה ----------
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let rec = null, onAnswer = null, heard = [];
-function askAnswer(cb) {
-  onAnswer = cb; heard = [];
+let rec = null, onAnswer = null, heard = [], liveItem = null, listenWanted = false, listenRestarts = 0;
+// item: אם נותנים — ברגע שהמיקרופון שומע את התשובה הנכונה, שולחים לבד (בלי ללחוץ "שלח")
+function askAnswer(cb, item) {
+  onAnswer = cb; heard = []; liveItem = item || null; listenRestarts = 0;
   $("ansIn").value = ""; $("ansBox").hidden = false;
   const canMic = SR && IS_APP; // בקישור של Claude אין גישה למיקרופון
   $("micBtn").hidden = !canMic;
-  if (canMic) startListening(); else setTimeout(() => $("ansIn").focus(), 50);
+  if (canMic) { listenWanted = true; startListening(); } else setTimeout(() => $("ansIn").focus(), 50);
 }
 function submitAnswer() {
   if (!onAnswer) return;
   const typed = $("ansIn").value.trim();
-  const cb = onAnswer; onAnswer = null;
+  const cb = onAnswer; onAnswer = null; liveItem = null;
   stopListening(); $("ansBox").hidden = true;
   cb(typed, heard.filter((x) => x && x !== typed));
 }
+const saidRight = (texts) => !!liveItem && texts.some((t) => { const j = localJudge(t, [liveItem.a, ...(liveItem.alt || [])]); return j && j.ok === true; });
 function startListening() {
   if (!SR || rec) return;
   try {
-    rec = new SR(); rec.lang = "he-IL"; rec.interimResults = true; rec.maxAlternatives = 4; rec.continuous = false;
-    rec.onresult = (e) => {
+    const r0 = new SR(); rec = r0;
+    r0.lang = "he-IL"; r0.interimResults = true; r0.maxAlternatives = 4; r0.continuous = false;
+    r0.onresult = (e) => {
       const r = e.results[e.results.length - 1];
-      $("ansIn").value = r[0].transcript.trim();
-      if (r.isFinal) { heard = [...r].map((x) => x.transcript.trim()); setTimeout(submitAnswer, 350); }
+      const texts = [...r].map((x) => x.transcript.trim()).filter(Boolean);
+      if (!texts.length) return;
+      $("ansIn").value = texts[0];
+      if (saidRight(texts)) { heard = texts; return submitAnswer(); }
+      if (r.isFinal) { heard = texts; setTimeout(submitAnswer, 350); }
     };
-    rec.onerror = () => { stopListening(); $("ansIn").focus(); };
-    rec.onend = () => { rec = null; $("micBtn").classList.remove("on"); };
-    rec.start(); $("micBtn").classList.add("on");
+    r0.onerror = (e) => { if (e.error === "not-allowed" || e.error === "service-not-allowed") { listenWanted = false; $("ansIn").focus(); } };
+    r0.onend = () => {
+      if (rec !== r0) return;
+      rec = null; $("micBtn").classList.remove("on");
+      // היה שקט? ממשיכים להקשיב עד שהזמן נגמר
+      if (onAnswer && listenWanted && !heard.length && listenRestarts++ < 8) setTimeout(() => { if (onAnswer && listenWanted) startListening(); }, 200);
+    };
+    r0.start(); $("micBtn").classList.add("on");
   } catch (e) { rec = null; }
 }
-function stopListening() { try { rec && rec.abort(); } catch (e) {} rec = null; $("micBtn").classList.remove("on"); }
-$("micBtn").onclick = () => { if (rec) stopListening(); else startListening(); };
+function stopListening() { listenWanted = false; const r = rec; rec = null; try { r && r.abort(); } catch (e) {} $("micBtn").classList.remove("on"); }
+$("micBtn").onclick = () => { if (rec) stopListening(); else { listenWanted = true; listenRestarts = 0; startListening(); } };
 $("ansGo").onclick = submitAnswer;
 $("ansIn").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); submitAnswer(); } });
 // בודק כמה ניסוחים (המיקרופון לפעמים שומע כמה אפשרויות) ובוחר את הכי טוב
@@ -950,7 +1044,7 @@ function soloNext() {
     G.phase = "answering";
     acts(`מה זה? <button class="act" data-a="soloSkip">🙈 לא יודע</button>`);
     startAnswerTimer(null, 15, () => soloAnswer($("ansIn").value.trim(), heard));
-    askAnswer((typed, more) => soloAnswer(typed, more));
+    askAnswer((typed, more) => soloAnswer(typed, more), G.item);
   });
 }
 async function soloAnswer(typed, more) {
@@ -975,7 +1069,7 @@ async function soloAnswer(typed, more) {
 function soloResult(ok, text) {
   const s = G.solo;
   G.phase = "scored";
-  if (!document.querySelector(".answer")) showAnswerOnStage();
+  if (!$("stage").querySelector(".answer")) showAnswerOnStage();
   if (ok) s.ok++; else s.no++;
   paintSolo();
   flash(ok, ok ? "✓ נכון!" : text ? "✗ טעות" : "⏰ לא ענית");
@@ -990,7 +1084,7 @@ function soloOver(won) {
   clearTimers(); stopAnswerTimer(); G.phase = "over";
   const s = G.solo;
   $("winTxt").textContent = won ? "ניצחת! 🏆" : "נפסלת 😅";
-  $("fBlue").textContent = s.ok + " ✓"; $("fRed").textContent = s.no + " ✗";
+  $("final").innerHTML = `<span class="gr">${s.ok} ✓</span> : <span class="rd">${s.no} ✗</span>`;
   show("over");
   if (won) { sfx.win(); confetti("blue"); } else sfx.bad();
 }
@@ -1084,18 +1178,17 @@ $("joinGo").onclick = async () => {
 const myColor = () => (NET.role === "host" ? "blue" : "red");
 const meKey = () => NET.role;
 const themKey = () => (NET.role === "host" ? "guest" : "host");
+// באונליין יש כפתור אחד גדול (שלי). הניקוד של החבר כתוב עליו
 function paintOnline() {
-  const mine = O.score[meKey()], theirs = O.score[themKey()];
-  const me = myColor() === "blue" ? "Blue" : "Red", them = me === "Blue" ? "Red" : "Blue";
-  $("sc" + me).textContent = mine; $("sc" + them).textContent = theirs;
-  $("bar" + me).style.width = Math.min(100, mine / O.target * 100) + "%";
-  $("bar" + them).style.width = Math.min(100, theirs / O.target * 100) + "%";
+  const mine = O.score[meKey()], theirs = O.score[themKey()], C = cap(myColor());
+  $("sc" + C).textContent = mine;
+  $("bar" + C).style.width = Math.min(100, mine / O.target * 100) + "%";
+  btn(myColor()).querySelector(".vs").textContent = "החבר: " + theirs;
 }
 function startOnlineScreen() {
-  setPanels("online");
-  const mine = myColor() === "blue" ? $("bBlue") : $("bRed"), theirs = mine === $("bBlue") ? $("bRed") : $("bBlue");
-  mine.querySelector(".who").textContent = "אני"; theirs.querySelector(".who").textContent = "החבר";
-  theirs.classList.add("dim"); theirs.querySelector(".tap").textContent = ""; mine.querySelector(".tap").textContent = "לחץ!";
+  setPanels("online", [myColor()]);
+  const mine = btn(myColor());
+  mine.querySelector(".who").textContent = "אני"; mine.querySelector(".vs").hidden = false;
   $("gTitle").textContent = O.title;
   paintOnline(); show("game"); keepAwake();
 }
@@ -1117,7 +1210,7 @@ function hostStart() {
 function hostRound() {
   if (!O.queue.length) O.queue = O.reserve.length ? O.reserve.splice(0) : freshFirst(O.deck.items);
   const it = O.queue.shift();
-  O.n++; O.buzzes = []; O.answerer = null; O.result = null;
+  O.n++; O.buzzes = []; O.answerer = null; O.result = null; O.dunno = {}; O.readyOpen = false;
   // אותו זום / סדר חתיכות לשני הטלפונים
   const fxSeed = { zoom: null, tiles: null };
   if (it.fx === "zoom") { const s = { easy: 0.5, medium: 0.32, hard: 0.2 }[it.fxLevel] || 0.32, pad = Math.min(0.12, (1 - s) / 2); fxSeed.zoom = { s, x: pad + Math.random() * (1 - s - 2 * pad), y: pad + Math.random() * (1 - s - 2 * pad) }; }
@@ -1155,16 +1248,31 @@ function hostFinish(ok, text, none) {
   O.result = true; clearTimers(); stopAnswerTimer();
   let point = null;
   if (!none) { point = ok ? O.answerer : (O.answerer === "host" ? "guest" : "host"); O.score[point]++; }
-  const msg = { n: O.n, ok, text, none: !!none, answerer: O.answerer, point, score: O.score };
-  send("result", msg); showResult(msg);
   const w = point && O.score[point] >= O.target ? point : null;
+  const msg = { n: O.n, ok, text, none: none || false, answerer: O.answerer, point, score: O.score, final: !!w };
+  // לא ממשיכים לבד: כל אחד לוחץ "מוכן", ורק כששניהם מוכנים עוברים לתמונה הבאה
+  O.ready = { host: false, guest: false }; O.readyOpen = !w;
+  send("result", msg); showResult(msg);
   if (w) later(() => { send("over", { winner: w, score: O.score }); onlineOver(w); }, 2200);
-  else later(hostRound, 2600);
+}
+// "לא יודע": אם שניהם לחצו — מראים את התשובה וממשיכים
+function hostGotDunno(who, n) {
+  if (n !== O.n || O.answerer || O.result) return;
+  O.dunno[who] = true;
+  send("dunnoState", { n, dunno: O.dunno });
+  if (O.dunno.host && O.dunno.guest) hostFinish(false, "", "dunno"); else openActs();
+}
+function hostGotReady(who, on, n) {
+  if (n !== O.n || !O.readyOpen) return;
+  O.ready[who] = !!on;
+  send("readyState", { n, ready: O.ready });
+  readyActs();
+  if (O.ready.host && O.ready.guest) { O.readyOpen = false; later(hostRound, 300); }
 }
 
 // ---- מה ששני הטלפונים עושים ----
 async function playRound(msg, item) {
-  G.phase = "countdown"; O.n = msg.n; O.score = msg.score; O.myBuzzSent = false;
+  G.phase = "countdown"; O.n = msg.n; O.score = msg.score; O.myBuzzSent = false; O.dunno = {};
   const it = item || await itemFromRef(msg.ref);
   if (msg.fxSeed && msg.fxSeed.zoom) it.zoomSeed = msg.fxSeed.zoom;
   if (msg.fxSeed && msg.fxSeed.tiles) it.tileSeed = msg.fxSeed.tiles;
@@ -1176,10 +1284,21 @@ async function playRound(msg, item) {
   acts("מתכוננים…");
   countdown(() => {
     G.phase = "open"; O.openedAt = performance.now();
-    acts("מי יודע? לחץ על הכפתור שלך!");
-    // אם אף אחד לא לוחץ 12 שניות — מדלגים
-    if (NET.role === "host") later(() => { if (!O.answerer && !O.result) hostFinish(false, "", true); }, 12000);
+    openActs();
+    // אם אף אחד לא לוחץ כלום 30 שניות — מראים את התשובה
+    if (NET.role === "host") later(() => { if (!O.answerer && !O.result) hostFinish(false, "", true); }, 30000);
   });
+}
+function openActs() {
+  if (G.phase !== "open" || O.myBuzzSent) return;
+  const meD = O.dunno[meKey()], themD = O.dunno[themKey()];
+  acts(meD ? `🙈 סימנת שאתה לא יודע. מחכים לחבר… <span class="note">(נזכרת? לחץ על הכפתור!)</span>`
+    : `מי יודע? לחץ על הכפתור! <button class="act" data-a="dunno">🙈 לא יודע</button>${themD ? ` <span class="note">(החבר לא יודע 🤷)</span>` : ""}`);
+}
+function onlineDunno() {
+  if (G.phase !== "open" || O.myBuzzSent || O.dunno[meKey()]) return;
+  O.dunno[meKey()] = true; openActs();
+  if (NET.role === "host") hostGotDunno("host", O.n); else send("dunno", { n: O.n });
 }
 function onlineBuzz() {
   if (G.phase !== "open" || O.myBuzzSent) return;
@@ -1192,16 +1311,18 @@ function onAnswering(who) {
   G.phase = "answering";
   const color = who === "host" ? "blue" : "red";
   setSides(color);
-  sfx[color === "blue" ? "buzzBlue" : "buzzRed"]();
+  sfx.buzz(color);
   const mine = who === NET.role;
   startAnswerTimer(color, 15, () => { if (mine) submitAnswer(); });
   if (mine) {
-    acts("אתה עונה! אמור את התשובה 🎤");
+    acts("אתה ראשון! תגיד את התשובה 🎤");
+    // המיקרופון מתחיל לבד. אמרת את התשובה הנכונה — זה נשלח לבד והזמן נעצר
     askAnswer((typed, more) => {
+      stopAnswerTimer();
       const texts = [typed, ...(more || [])];
-      acts("שלחת: \"" + escapeHtml(typed || "…") + "\". השופט בודק…");
+      acts("אמרת: \"" + escapeHtml(typed || "…") + "\". בודק…");
       if (NET.role === "host") hostGotAnswer(texts, O.n); else send("answer", { n: O.n, texts });
-    });
+    }, G.item);
   } else acts("החבר עונה… ⏳");
   // ביטחון: אם המארח לא קיבל תשובה אחרי 20 שניות — טעות
   if (NET.role === "host") later(() => { if (!O.result && !O.pending) hostFinish(false, ""); }, 20000);
@@ -1221,19 +1342,37 @@ function onlineDecide(ok) {
 }
 function showResult(m) {
   G.phase = "scored"; clearTimers(); stopAnswerTimer(); stopListening(); onAnswer = null; $("ansBox").hidden = true;
-  O.score = m.score; paintOnline();
-  if (!document.querySelector(".answer")) showAnswerOnStage();
-  if (m.none) { acts("אף אחד לא לחץ. לתמונה הבאה…"); return; }
-  const answererIsMe = m.answerer === NET.role;
-  const iGot = m.point === NET.role;
-  flash(m.ok, m.ok ? "✓ נכון!" : m.text ? "✗ טעות" : "⏰ נגמר הזמן");
-  acts((answererIsMe ? "ענית" : "החבר ענה") + (m.text ? `: "${escapeHtml(m.text)}"` : "") + " · נקודה " + (iGot ? "לך! 🎉" : "לחבר"));
+  O.score = m.score; paintOnline(); setSides(null);
+  if (!$("stage").querySelector(".answer")) showAnswerOnStage();
+  if (m.none) O.resultLine = m.none === "dunno" ? "שניכם לא ידעתם 🤷 אין נקודה." : "אף אחד לא לחץ. אין נקודה.";
+  else {
+    const answererIsMe = m.answerer === NET.role;
+    flash(m.ok, m.ok ? (answererIsMe ? "✓ צדקת!" : "✓ נכון!") : m.text ? "✗ טעות" : "⏰ נגמר הזמן");
+    O.resultLine = (answererIsMe ? "ענית" : "החבר ענה") + (m.text ? `: "${escapeHtml(m.text)}"` : "") + " · נקודה " + (m.point === NET.role ? "לך! 🎉" : "לחבר");
+  }
+  if (m.final) { acts(O.resultLine); return; }
+  G.phase = "ready"; O.ready = { host: false, guest: false };
+  readyActs();
+}
+// בין תמונה לתמונה: כל אחד לוחץ "מוכן" (ואפשר לבטל). ממשיכים רק כששניהם מוכנים
+function readyActs() {
+  if (G.phase !== "ready") return;
+  const me = O.ready[meKey()], them = O.ready[themKey()];
+  acts(`<span style="flex-basis:100%">${O.resultLine}</span>
+    <button class="act big ${me ? "good" : ""}" data-a="ready">${me ? "✓ אני מוכן (לחץ לביטול)" : "✋ מוכן"}</button>
+    <span class="note">החבר: ${them ? "מוכן ✓" : "עוד לא מוכן…"}</span>`);
+}
+function onlineReady() {
+  if (G.phase !== "ready") return;
+  const on = !O.ready[meKey()];
+  O.ready[meKey()] = on; readyActs();
+  if (NET.role === "host") hostGotReady("host", on, O.n); else send("ready", { n: O.n, on });
 }
 function onlineOver(w) {
   clearTimers(); G.phase = "over";
   const iWon = w === NET.role;
   $("winTxt").textContent = iWon ? "ניצחת! 🏆" : "החבר ניצח 😅";
-  $("fBlue").textContent = O.score[meKey()]; $("fRed").textContent = O.score[themKey()];
+  $("final").innerHTML = `<span class="${cls[myColor()]}">${O.score[meKey()]}</span> : <span class="${cls[myColor() === "blue" ? "red" : "blue"]}">${O.score[themKey()]}</span>`;
   show("over"); if (iWon) { sfx.win(); confetti(myColor()); }
 }
 function onNet(m) {
@@ -1243,6 +1382,8 @@ function onNet(m) {
     else if (m.type === "buzz") hostGotBuzz("guest", m.rt, m.n);
     else if (m.type === "answer") hostGotAnswer(m.texts || [], m.n);
     else if (m.type === "decide" && m.n === O.n && O.pending) { const t = O.pending.text; O.pending = null; hostFinish(!!m.ok, t); }
+    else if (m.type === "dunno") hostGotDunno("guest", m.n);
+    else if (m.type === "ready") hostGotReady("guest", m.on, m.n);
     return;
   }
   // המצטרף
@@ -1251,6 +1392,8 @@ function onNet(m) {
   else if (m.type === "answering" && m.n === O.n) onAnswering(m.who);
   else if (m.type === "confirm" && m.n === O.n) onConfirm(m.judge, m.text, m.reason);
   else if (m.type === "result" && m.n === O.n) showResult(m);
+  else if (m.type === "dunnoState" && m.n === O.n) { O.dunno = m.dunno || {}; openActs(); }
+  else if (m.type === "readyState" && m.n === O.n) { O.ready = m.ready; readyActs(); }
   else if (m.type === "over") onlineOver(m.winner);
 }
 
@@ -1258,7 +1401,7 @@ function onNet(m) {
 function gameOver(w) {
   clearTimers(); stopAnswerTimer(); G.phase = "over";
   $("winTxt").innerHTML = `<span class="${cls[w]}">${heb[w]}</span> ניצח! 🏆`;
-  $("fBlue").textContent = G.score.blue; $("fRed").textContent = G.score.red;
+  $("final").innerHTML = G.players.map((k) => `<span class="${cls[k]}">${G.score[k]}</span>`).join(" : ");
   show("over"); sfx.win(); confetti(w);
 }
 $("again").onclick = () => { stopConfetti(); if (G.mode === "solo") startSolo(G.deck); else if (G.mode === "online") { netLeave(); show("home"); } else startGame(G.deck); };
@@ -1269,7 +1412,8 @@ let confRaf;
 function confetti(w) {
   const cv = $("confetti"), ctx = cv.getContext("2d");
   cv.width = innerWidth; cv.height = innerHeight;
-  const cols = w === "blue" ? ["#2F7BFF", "#8FB6FF", "#FFC940", "#fff"] : ["#FF3B4A", "#FF9AA2", "#FFC940", "#fff"];
+  const main = { blue: ["#2F7BFF", "#8FB6FF"], red: ["#FF3B4A", "#FF9AA2"], green: ["#1FB45A", "#8BE3AE"], yellow: ["#E8A800", "#FFE08A"], purple: ["#9B5CFF", "#CFB2FF"] }[w] || ["#2F7BFF", "#8FB6FF"];
+  const cols = [...main, "#FFC940", "#fff"];
   const ps = Array.from({ length: 140 }, () => ({ x: Math.random() * cv.width, y: -Math.random() * cv.height, v: 2 + Math.random() * 4,
     s: 6 + Math.random() * 8, r: Math.random() * 6, dr: (Math.random() - .5) * .2, c: cols[Math.random() * cols.length | 0] }));
   const draw = () => {
