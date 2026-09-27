@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/favicon.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<script>window.HAZIRA_IS_APP = true;</script>
+<script>window.HAZIRA_IS_APP = true; window.HAZIRA_VERSION = "1790529976093";</script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
 <body>
@@ -1285,6 +1285,34 @@ function confetti(w) {
 function stopConfetti() { cancelAnimationFrame(confRaf); }
 </script>
 
-<script>if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));</script>
+<script>
+// עדכון אוטומטי: בכל פתיחה של האפליקציה בודקים אם יש גרסה חדשה, ואם כן — מתעדכנים לבד
+(function () {
+  let reloading = false;
+  const reloadNow = () => { if (reloading) return; reloading = true; location.reload(); };
+  async function check() {
+    try {
+      const r = await fetch("version.json?t=" + Date.now(), { cache: "no-store" });
+      const { v } = await r.json();
+      if (v && v !== window.HAZIRA_VERSION) {
+        // לא מפריעים באמצע משחק
+        const busy = document.getElementById("game") && !document.getElementById("game").hidden;
+        if (busy) { window.HAZIRA_UPDATE_PENDING = true; return; }
+        const reg = await navigator.serviceWorker?.getRegistration();
+        if (reg) await reg.update().catch(() => {});
+        reloadNow();
+      }
+    } catch (e) {}
+  }
+  if ("serviceWorker" in navigator) {
+    addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+    navigator.serviceWorker.addEventListener("controllerchange", () => { if (window.HAZIRA_UPDATE_PENDING || reloading) reloadNow(); });
+  }
+  addEventListener("load", check);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) check(); });
+  // כשחוזרים למסך הבית אחרי משחק — אם חיכה עדכון, מתעדכנים
+  setInterval(() => { const home = document.getElementById("home"); if (window.HAZIRA_UPDATE_PENDING && home && !home.hidden) reloadNow(); }, 3000);
+})();
+</script>
 </body>
 </html>
