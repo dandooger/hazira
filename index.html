@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/favicon.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<script>window.HAZIRA_IS_APP = true; window.HAZIRA_VERSION = "1790534981649";</script>
+<script>window.HAZIRA_IS_APP = true; window.HAZIRA_VERSION = "1790538148626";</script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
 <body>
@@ -25,7 +25,7 @@
   --ink:#1A1405; --muted:#6B5410;
   --blue:#1E6BFF; --blue-deep:#0F3A8F; --red:#F0283A; --red-deep:#8C1520;
   --gold:#1A1405; --good:#0E9446; --bad:#D7263D;
-  --green:#1FB45A; --green-deep:#0B5229; --yellow:#E8A800; --yellow-deep:#6E4F00; --purple:#9B5CFF; --purple-deep:#44198C;
+  --green:#1FB45A; --green-deep:#0B5229; --yellow:#E8A800; --yellow-deep:#6E4F00; --purple:#9B5CFF; --purple-deep:#44198C; --pink:#FF4FA3; --pink-deep:#8C1A55;
   --display:"Secular One","Arial Hebrew",Arial,sans-serif;
   --body:"Assistant","Segoe UI",Arial,sans-serif;
   color-scheme:light;
@@ -55,7 +55,7 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
 .how div{background:var(--stage);border:1px solid var(--line);border-radius:12px;padding:12px 14px;line-height:1.5;color:var(--muted);font-size:15px}
 .how b{color:var(--ink)}
 .bl{color:var(--blue);font-weight:800}.rd{color:var(--red);font-weight:800}
-.gr{color:var(--green);font-weight:800}.yl{color:var(--yellow);font-weight:800}.pu{color:var(--purple);font-weight:800}
+.gr{color:var(--green);font-weight:800}.yl{color:var(--yellow);font-weight:800}.pu{color:var(--purple);font-weight:800}.pk{color:var(--pink);font-weight:800}
 .target{display:flex;align-items:center;gap:10px;background:var(--stage);border:1px solid var(--line);border-radius:999px;padding:5px 7px}
 .target button{width:40px;height:40px;border-radius:50%;border:0;background:var(--panel);font-size:22px}
 .target output{font-family:var(--display);font-size:26px;min-width:2ch;text-align:center;color:var(--gold)}
@@ -146,7 +146,7 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
 .act.judge{border-color:var(--gold)}
 .act.big{flex:1 1 40%}
 
-/* כפתורי הלחיצה הגדולים (2 עד 5 שחקנים; באונליין — כפתור אחד על כל הרוחב) */
+/* כפתורי הלחיצה הגדולים (2 עד 6 שחקנים, חצי מכל צד של הטלפון; באונליין — כפתור אחד על כל הרוחב) */
 .buzzers{direction:ltr;display:grid;grid-template-columns:repeat(var(--n,2),1fr);gap:10px;height:clamp(130px,24vh,210px)}
 .buzzers.top{transform:rotate(180deg)}
 .stage.mirror{transform:rotate(180deg)}
@@ -166,6 +166,7 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
 .buzz.green{background:linear-gradient(180deg,var(--green),var(--green-deep));--pc:var(--green)}
 .buzz.yellow{background:linear-gradient(180deg,var(--yellow),var(--yellow-deep));--pc:var(--yellow)}
 .buzz.purple{background:linear-gradient(180deg,var(--purple),var(--purple-deep));--pc:var(--purple)}
+.buzz.pink{background:linear-gradient(180deg,var(--pink),var(--pink-deep));--pc:var(--pink)}
 .buzz:active{transform:scale(.97)}
 .buzz .who{font-family:var(--display);font-size:20px}
 .buzz .score{font-family:var(--display);font-size:clamp(48px,15vw,84px);line-height:1;font-variant-numeric:tabular-nums}
@@ -233,7 +234,7 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
   <div class="row">
     <h2>מצב</h2>
     <div class="modes" id="modes">
-      <button class="mode" data-m="duo" aria-pressed="true"><b>👥 ביחד</b><span>2 עד 5 על טלפון אחד</span></button>
+      <button class="mode" data-m="duo" aria-pressed="true"><b>👥 ביחד</b><span>2 עד 6 על טלפון אחד</span></button>
       <button class="mode" data-m="solo" aria-pressed="false"><b>🙋 לבד</b><span>נגד השעון</span></button>
       <button class="mode" data-m="online" aria-pressed="false" id="modeOnline"><b>🌐 אונליין</b><span>כל אחד מהטלפון שלו</span></button>
     </div>
@@ -366,7 +367,7 @@ function beep(freq, dur = .15, type = "sine", vol = .25, when = 0) {
 const sfx = {
   tick: () => beep(660, .12, "square", .12),
   go: () => beep(990, .3, "square", .15),
-  buzz: (k) => { const f = { blue: 330, red: 262, green: 392, yellow: 294, purple: 440 }[k] || 330; beep(f, .35, "sawtooth", .2); beep(f * 1.33, .35, "sawtooth", .12, .05); },
+  buzz: (k) => { const f = { blue: 330, red: 262, green: 392, yellow: 294, purple: 440, pink: 494 }[k] || 330; beep(f, .35, "sawtooth", .2); beep(f * 1.33, .35, "sawtooth", .12, .05); },
   good: () => { beep(660, .12, "triangle", .3); beep(880, .12, "triangle", .3, .12); beep(1320, .25, "triangle", .3, .24); },
   bad: () => beep(200, .45, "sawtooth", .22),
   win: () => [523, 659, 784, 1047].forEach((f, i) => beep(f, .35, "triangle", .3, i * .15)),
@@ -385,7 +386,7 @@ const setTarget = (v) => { target = Math.max(3, Math.min(30, v)); $("tVal").valu
 $("tMinus").onclick = () => setTarget(target - 1);
 $("tPlus").onclick = () => setTarget(target + 1);
 let players = 2;
-const setPlayers = (v) => { players = Math.max(2, Math.min(5, v)); $("pVal").value = players; $("pVal").textContent = players; paintMode(); };
+const setPlayers = (v) => { players = Math.max(2, Math.min(6, v)); $("pVal").value = players; $("pVal").textContent = players; paintMode(); };
 $("pMinus").onclick = () => setPlayers(players - 1);
 $("pPlus").onclick = () => setPlayers(players + 1);
 $("levels").addEventListener("click", (e) => {
@@ -411,8 +412,8 @@ fetch("data/index.json").then((r) => r.json()).then((cats) => {
 let mode = "duo";
 const IS_APP = !!window.HAZIRA_IS_APP;
 const MODE_NOTE = {
-  duo: () => players === 2 ? "" : `${players} שחקנים על טלפון אחד. מי שלוחץ ראשון עונה בקול. נכון = נקודה לו. טעות = יורדת לו נקודה.`
-    + (players >= 4 ? " שימו את הטלפון באמצע השולחן: יש שתי תמונות, אחת הפוכה בשביל מי שיושב ממול." : ""),
+  duo: () => `שימו את הטלפון באמצע השולחן: ${Math.ceil(players / 2)} מצד אחד ו-${Math.floor(players / 2)} מהצד השני. יש שתי תמונות, אחת הפוכה בשביל מי שיושב ממול.`
+    + (players === 2 ? "" : " נכון = נקודה למי שענה. טעות = יורדת לו נקודה."),
   solo: () => `משחק לבד: ${target + 5} תמונות, צריך ${target} נכונות. ${6} טעויות ואתה בחוץ! עונים במיקרופון 🎤 או בהקלדה.`,
   online: IS_APP ? "כל אחד משחק מהטלפון שלו. מי שלוחץ ראשון עונה במיקרופון 🎤 או בהקלדה, והשופט בודק." : "מצב אונליין עובד רק באפליקציה (לחצו \"התקן אפליקציה\" למעלה).",
 };
@@ -479,6 +480,7 @@ const PLAYERS = [
   { k: "green", name: "ירוק", heb: "הירוק", cls: "gr" },
   { k: "yellow", name: "צהוב", heb: "הצהוב", cls: "yl" },
   { k: "purple", name: "סגול", heb: "הסגול", cls: "pu" },
+  { k: "pink", name: "ורוד", heb: "הוורוד", cls: "pk" },
 ];
 const other = (p) => (p === "blue" ? "red" : "blue");
 const heb = Object.fromEntries(PLAYERS.map((p) => [p.k, p.heb]));
@@ -494,9 +496,9 @@ let wakeLock = null;
 async function keepAwake() { try { wakeLock = await navigator.wakeLock.request("screen"); } catch (e) {} }
 document.addEventListener("visibilitychange", () => { if (!document.hidden && !$("game").hidden) keepAwake(); });
 
-// בונה כפתור לכל שחקן. 4-5 שחקנים: חצי מהכפתורים למעלה והפוכים, ותמונה שנייה הפוכה
+// בונה כפתור לכל שחקן. על טלפון אחד: חצי מהכפתורים למעלה והפוכים, ותמונה שנייה הפוכה
 function buildBuzzers(keys) {
-  const two = keys.length >= 4;
+  const two = G.mode === "duo" && keys.length >= 2; // על טלפון אחד: חצי מהשחקנים מכל צד
   const bottom = two ? keys.slice(0, Math.ceil(keys.length / 2)) : keys, top = two ? keys.slice(bottom.length) : [];
   const make = (k) => {
     const p = PLAYERS.find((x) => x.k === k), C = cap(k);
@@ -509,7 +511,7 @@ function buildBuzzers(keys) {
   $("buzzers").replaceChildren(...bottom.map(make)); $("buzzers").style.setProperty("--n", Math.max(1, bottom.length));
   $("buzzersTop").replaceChildren(...top.map(make)); $("buzzersTop").style.setProperty("--n", Math.max(1, top.length));
   $("buzzersTop").hidden = $("stage2").hidden = !two;
-  $("game").classList.toggle("multi", keys.length > 2);
+  $("game").classList.toggle("multi", keys.length > 2 || two);
   $("game").classList.toggle("two-sides", two);
   $("game").classList.toggle("one", keys.length === 1);
   syncMirror();
@@ -1412,7 +1414,7 @@ let confRaf;
 function confetti(w) {
   const cv = $("confetti"), ctx = cv.getContext("2d");
   cv.width = innerWidth; cv.height = innerHeight;
-  const main = { blue: ["#2F7BFF", "#8FB6FF"], red: ["#FF3B4A", "#FF9AA2"], green: ["#1FB45A", "#8BE3AE"], yellow: ["#E8A800", "#FFE08A"], purple: ["#9B5CFF", "#CFB2FF"] }[w] || ["#2F7BFF", "#8FB6FF"];
+  const main = { blue: ["#2F7BFF", "#8FB6FF"], red: ["#FF3B4A", "#FF9AA2"], green: ["#1FB45A", "#8BE3AE"], yellow: ["#E8A800", "#FFE08A"], purple: ["#9B5CFF", "#CFB2FF"], pink: ["#FF4FA3", "#FFB3D6"] }[w] || ["#2F7BFF", "#8FB6FF"];
   const cols = [...main, "#FFC940", "#fff"];
   const ps = Array.from({ length: 140 }, () => ({ x: Math.random() * cv.width, y: -Math.random() * cv.height, v: 2 + Math.random() * 4,
     s: 6 + Math.random() * 8, r: Math.random() * 6, dr: (Math.random() - .5) * .2, c: cols[Math.random() * cols.length | 0] }));
