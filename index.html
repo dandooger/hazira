@@ -72,6 +72,28 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
 .install .go{text-decoration:none;display:inline-flex;align-items:center;gap:8px}
 .steps{display:grid;gap:10px;line-height:1.55;font-size:17px}
 .steps b{color:var(--gold)}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%}
+.mode{all:unset;cursor:pointer;background:var(--stage);border:2px solid var(--line);border-radius:12px;padding:10px 8px;display:grid;gap:2px;text-align:center}
+.mode b{font-family:var(--display);font-weight:400;font-size:20px}
+.mode span{color:var(--muted);font-size:12.5px;line-height:1.3}
+.mode[aria-pressed="true"]{border-color:var(--gold);background:var(--panel)}
+.joinbox{background:linear-gradient(135deg,var(--blue-deep),var(--red-deep));border-radius:14px;padding:14px;display:grid;gap:10px}
+.joinbox input{font:inherit;font-size:24px;letter-spacing:.2em;text-align:center;color:var(--ink);background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:8px;width:9em;direction:ltr}
+#lobby{display:grid;place-items:center;text-align:center;min-height:100%;padding-block:24px}
+#lobby .code{font-family:var(--display);font-size:clamp(56px,20vw,110px);letter-spacing:.12em;color:var(--gold);direction:ltr;line-height:1}
+.ansbox{display:flex;gap:8px;align-items:center;width:100%}
+.ansbox input{flex:1;min-width:0;font:inherit;font-size:19px;color:var(--ink);background:var(--ground);border:2px solid var(--gold);border-radius:12px;padding:10px 12px}
+.ansbox button{border:0;border-radius:12px;min-width:52px;height:50px;font-size:22px;background:var(--panel);border:2px solid var(--line)}
+.ansbox .mic.on{background:var(--bad);border-color:var(--bad);animation:pulseMic 1s ease-in-out infinite alternate}
+@keyframes pulseMic{to{transform:scale(1.08)}}
+.ansbox .send{background:var(--gold);color:var(--ground);font-family:var(--display);font-size:18px;padding:0 14px}
+.soloBar{display:grid;grid-template-columns:1fr 1fr;gap:10px;height:clamp(96px,16vh,150px)}
+.soloBar div{border-radius:18px;display:grid;place-items:center;align-content:center;gap:2px;font-family:var(--display)}
+.soloBar .ok{background:linear-gradient(180deg,#1f8f55,#0d4a2b)}
+.soloBar .no{background:linear-gradient(180deg,#b3263a,#4a0d17)}
+.soloBar b{font-size:clamp(38px,11vw,64px);font-weight:400;line-height:1;font-variant-numeric:tabular-nums}
+.soloBar span{font-family:var(--body);font-size:14px;opacity:.85}
+.buzz.dim{pointer-events:none}
 .pc-only{border:1px dashed var(--line);border-radius:14px;padding:12px 14px}
 
 /* ---------- טעינה ---------- */
@@ -149,6 +171,7 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
   .acts{grid-column:1/-1;grid-row:3}
   .buzzers{display:contents}
   .buzz.blue{grid-column:1;grid-row:2}
+  .ansbox,.soloBar{grid-column:1/-1}
   .buzz.red{grid-column:3;grid-row:2}
 }
 
@@ -189,6 +212,22 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
   </div>
 
   <div class="row">
+    <h2>מצב</h2>
+    <div class="modes" id="modes">
+      <button class="mode" data-m="duo" aria-pressed="true"><b>👥 שניים</b><span>שניים על טלפון אחד</span></button>
+      <button class="mode" data-m="solo" aria-pressed="false"><b>🙋 לבד</b><span>נגד השעון</span></button>
+      <button class="mode" data-m="online" aria-pressed="false" id="modeOnline"><b>🌐 אונליין</b><span>כל אחד מהטלפון שלו</span></button>
+    </div>
+  </div>
+  <div class="note" id="modeNote"></div>
+  <div class="joinbox" id="joinBox" hidden>
+    <b>יש לך קוד מחבר? הצטרף:</b>
+    <div class="row"><input id="joinCode" inputmode="numeric" maxlength="5" placeholder="12345" autocomplete="off"><button class="go" id="joinGo">הצטרף</button></div>
+    <span class="note">או בחר קטגוריה למטה כדי <b>ליצור חדר</b> ולשלוח קוד לחבר.</span>
+    <div class="err" id="joinErr" hidden></div>
+  </div>
+
+  <div class="row">
     <h2>משחקים עד</h2>
     <div class="target"><button id="tMinus" aria-label="פחות">−</button><output id="tVal">10</output><button id="tPlus" aria-label="יותר">+</button></div>
     <span class="note">נקודות</span>
@@ -210,6 +249,17 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
   <div class="pc-only note">✨ <b>קטגוריה משלכם</b> (שClaude ממציא) עובדת רק בגרסה של המחשב, כי שם אפשר להביא תמונות מהאינטרנט.</div>
 </section>
 
+<!-- חדר אונליין -->
+<section id="lobby" class="screen" hidden>
+  <div style="display:grid;gap:16px;justify-items:center">
+    <h2 id="lobbyTitle">החדר מוכן!</h2>
+    <div class="code" id="lobbyCode">·····</div>
+    <div class="note" id="lobbyNote">שלח לחבר את הקוד. הוא פותח את האפליקציה, בוחר "אונליין" ומקליד אותו.</div>
+    <div class="row" style="justify-content:center"><button class="go" id="shareCode">📤 שלח לחבר</button><button class="ghost" id="lobbyCancel">ביטול</button></div>
+    <div class="spinner" style="width:40px;height:40px;border-width:5px"></div>
+  </div>
+</section>
+
 <!-- טעינה -->
 <section id="loading" class="screen" hidden>
   <div><div class="spinner"></div><h2 id="loadMsg">מביא תמונות…</h2></div>
@@ -228,7 +278,16 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
     <div class="count" id="count"></div>
   </div>
   <div class="acts" id="acts"></div>
-  <div class="buzzers">
+  <div class="ansbox" id="ansBox" hidden>
+    <button class="mic" id="micBtn" aria-label="מיקרופון">🎤</button>
+    <input id="ansIn" placeholder="אמור או כתוב את התשובה" autocomplete="off" enterkeyhint="send">
+    <button class="send" id="ansGo">שלח</button>
+  </div>
+  <div class="soloBar" id="soloBar" hidden>
+    <div class="ok"><b id="soloOk">0</b><span id="soloOkLbl">נכונות מתוך 10</span></div>
+    <div class="no"><b id="soloNo">0</b><span id="soloNoLbl">טעויות מתוך 6</span></div>
+  </div>
+  <div class="buzzers" id="buzzers">
     <button class="buzz blue" id="bBlue" aria-label="כחול לוחץ">
       <span class="who">כחול</span><span class="score" id="scBlue">0</span><span class="bar"><i id="barBlue"></i></span><span class="tap">לחץ!</span>
     </button>
@@ -270,7 +329,7 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
 
 <script>
 const $ = (id) => document.getElementById(id);
-const show = (id) => { for (const s of ["home", "loading", "game", "over"]) $(s).hidden = s !== id; };
+const show = (id) => { for (const s of ["home", "loading", "lobby", "game", "over"]) $(s).hidden = s !== id; };
 
 // ---------- צלילים ----------
 let ac;
@@ -320,6 +379,33 @@ fetch("data/index.json").then((r) => r.json()).then((cats) => {
   }
 }).catch(() => { $("hErr").textContent = "לא הצלחתי לטעון את הקטגוריות. נסו לרענן את הדף."; $("hErr").hidden = false; });
 
+// ---------- מצבי משחק ----------
+let mode = "duo";
+const IS_APP = !!window.HAZIRA_IS_APP;
+const MODE_NOTE = {
+  duo: "",
+  solo: () => `משחק לבד: ${target + 5} תמונות, צריך ${target} נכונות. ${6} טעויות ואתה בחוץ! עונים במיקרופון 🎤 או בהקלדה.`,
+  online: IS_APP ? "כל אחד משחק מהטלפון שלו. מי שלוחץ ראשון עונה במיקרופון 🎤 או בהקלדה, והשופט בודק." : "מצב אונליין עובד רק באפליקציה (לחצו \"התקן אפליקציה\" למעלה).",
+};
+function paintMode() {
+  document.querySelectorAll(".mode").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.m === mode)));
+  const n = MODE_NOTE[mode]; $("modeNote").textContent = typeof n === "function" ? n() : n; $("modeNote").hidden = !$("modeNote").textContent;
+  $("joinBox").hidden = !(mode === "online" && IS_APP);
+}
+$("modes").addEventListener("click", (e) => { const b = e.target.closest(".mode"); if (!b) return; mode = b.dataset.m; paintMode(); });
+paintMode();
+
+// ---------- זיכרון: אילו תמונות כבר ראית (כדי שכל משחק יהיה שונה) ----------
+const SEEN_KEY = "hazira-seen-v1";
+let seen = {};
+try { seen = JSON.parse(localStorage.getItem(SEEN_KEY) || "{}"); } catch (e) { seen = {}; }
+const seenKey = (it) => (it.w || it.emoji || it.a) + "|" + (it.fx || "");
+function markSeen(it) { const k = seenKey(it); seen[k] = (seen[k] || 0) + 1; try { localStorage.setItem(SEEN_KEY, JSON.stringify(seen)); } catch (e) {} }
+// מערבבים, ואז מקדימים את מה שראית הכי פחות פעמים
+function freshFirst(arr) {
+  return shuffleArr([...arr]).map((it, i) => [it, seen[seenKey(it)] || 0, i]).sort((a, b) => a[1] - b[1] || a[2] - b[2]).map((x) => x[0]);
+}
+
 // רזרבה: אם התמונות של הרמה נגמרות, ממשיכים עם הרמה הכי קרובה
 const NEAR = { easy: ["medium"], medium: ["easy", "hard"], hard: ["medium"] };
 const catCache = {};
@@ -329,22 +415,24 @@ async function loadRiddle(c) {
   // כדי שלא ייקח הרבה זמן להוריד, לוקחים תמונות מ-4 קטגוריות אקראיות מהרשימה
   const ids = shuffleArr([...c.sources]).slice(0, 4);
   const cats = await Promise.all(ids.map(getCat));
-  const pick = (lv) => shuffleArr(cats.flatMap((d) => (d.levels[lv] || []).filter((it) => it.img)
-    .map((it) => ({ ...it, fx: c.riddle, fxLevel: lv, hint: d.icon + " " + d.name }))));
+  const pick = (lv) => shuffleArr(cats.flatMap((d) => (d.levels[lv] || []).map((it, i) => [it, i]).filter(([it]) => it.img)
+    .map(([it, i]) => ({ ...it, fx: c.riddle, fxLevel: lv, hint: d.icon + " " + d.name, ref: { c: d.id, lv, i, fx: c.riddle, fxLevel: lv, hint: d.icon + " " + d.name } }))));
   return { name: c.name, icon: c.icon, rules: c.rules, levelName: LEVEL_NAME[level], items: pick(level), reserve: NEAR[level].flatMap(pick) };
+}
+async function buildDeck(c) {
+  if (c.riddle) return loadRiddle(c);
+  const d = await getCat(c.id);
+  const withRef = (lv) => (d.levels[lv] || []).map((it, i) => ({ ...it, ref: { c: d.id, lv, i } }));
+  return { name: d.name, icon: d.icon, rules: d.rules, levelName: LEVEL_NAME[level], items: withRef(level), reserve: NEAR[level].flatMap(withRef) };
 }
 async function loadCategory(c) {
   beep(1, .01, "sine", .001); // מעיר את הצלילים בלחיצה הראשונה
+  if (mode === "online") { if (IS_APP) hostRoom(c); else { $("hErr").textContent = MODE_NOTE.online; $("hErr").hidden = false; } return; }
   $("loadMsg").textContent = "מביא תמונות של " + c.name + " (" + LEVEL_NAME[level] + ")…";
   show("loading");
   try {
-    if (c.riddle) { startGame(await loadRiddle(c)); return; }
-    const d = await getCat(c.id);
-    startGame({
-      name: d.name, icon: d.icon, rules: d.rules, levelName: LEVEL_NAME[level],
-      items: d.levels[level] || [],
-      reserve: NEAR[level].flatMap((lv) => d.levels[lv] || []),
-    });
+    const deck = await buildDeck(c);
+    if (mode === "solo") startSolo(deck); else startGame(deck);
   } catch (e) {
     show("home");
     $("hErr").textContent = "לא הצלחתי לטעון את התמונות. נסו שוב."; $("hErr").hidden = false;
@@ -364,8 +452,15 @@ let wakeLock = null;
 async function keepAwake() { try { wakeLock = await navigator.wakeLock.request("screen"); } catch (e) {} }
 document.addEventListener("visibilitychange", () => { if (!document.hidden && !$("game").hidden) keepAwake(); });
 
+function setPanels(m) {
+  G.mode = m;
+  $("buzzers").hidden = m === "solo"; $("soloBar").hidden = m !== "solo"; $("ansBox").hidden = true;
+  document.querySelectorAll(".buzz").forEach((b) => b.classList.remove("dim"));
+  $("bBlue").querySelector(".who").textContent = "כחול"; $("bRed").querySelector(".who").textContent = "אדום";
+}
 function startGame(deck) {
-  G.deck = deck; G.queue = shuffle([...deck.items]); G.reserve = shuffle([...deck.reserve]);
+  setPanels("duo");
+  G.deck = deck; G.queue = freshFirst(deck.items); G.reserve = freshFirst(deck.reserve);
   G.score = { blue: 0, red: 0 }; G.round = 0;
   $("gTitle").textContent = deck.icon + " " + deck.name + " · " + deck.levelName;
   paintScore();
@@ -388,12 +483,55 @@ function setSides(on) {
 }
 function acts(html) { $("acts").innerHTML = html; }
 
+// מכין תמונה על הבמה (מוסתרת עד סוף הספירה)
+function prepPicture(item) {
+  clearTimers(); stopAnswerTimer(); stopListening();
+  $("judge").hidden = true; $("ansBox").hidden = true;
+  document.querySelectorAll(".answer,.flash").forEach((n) => n.remove());
+  G.item = item; markSeen(item);
+  $("stage").classList.add("hide");
+  const wrap = $("picWrap"); wrap.style.width = wrap.style.height = "0px";
+  $("emo").hidden = !G.item.emoji; $("pic").hidden = !!G.item.emoji;
+  if (G.item.emoji) { G.fx = null; G.fxOn = false; $("hintchip").hidden = true; $("pic").style.filter = ""; $("emo").textContent = G.item.emoji; layoutPic(); }
+  else { setupFx(); $("pic").onload = () => { checkSilhouette(); layoutPic(); }; $("pic").src = G.item.img; }
+}
+// ספירה 3-2-1 ואז פותחים את התמונה
+function countdown(then) {
+  let n = 3;
+  const step = () => {
+    if (n > 0) {
+      const c = $("count"); c.textContent = n; c.classList.remove("tick"); void c.offsetWidth; c.classList.add("tick");
+      sfx.tick(); n--; later(step, 1000);
+    } else {
+      $("count").textContent = ""; $("count").classList.remove("tick");
+      $("stage").classList.remove("hide"); layoutPic(); sfx.go();
+      then();
+    }
+  };
+  step();
+}
+function showAnswerOnStage() {
+  revealFx();
+  const a = document.createElement("div");
+  a.className = "answer";
+  a.textContent = G.item.a;
+  if (G.item.alt && G.item.alt.length) { const s = document.createElement("small"); s.textContent = "נחשב גם: " + G.item.alt.join(" · "); a.append(s); }
+  $("stage").append(a);
+}
+function flash(ok, text) {
+  const f = document.createElement("div");
+  f.className = "flash " + (ok ? "good" : "bad");
+  f.textContent = text || (ok ? "✓ נכון!" : "✗ טעות");
+  $("stage").append(f);
+  (ok ? sfx.good : sfx.bad)();
+}
+
 function nextRound() {
   clearTimers(); stopAnswerTimer();
   $("judge").hidden = true;
   document.querySelectorAll(".answer,.flash").forEach((n) => n.remove());
-  if (!G.queue.length) G.queue = G.reserve.length ? G.reserve.splice(0) : shuffle([...G.deck.items]);
-  G.item = G.queue.shift(); G.round++; G.buzzer = null;
+  if (!G.queue.length) G.queue = G.reserve.length ? G.reserve.splice(0) : freshFirst(G.deck.items);
+  G.item = G.queue.shift(); G.round++; G.buzzer = null; markSeen(G.item);
   $("gRound").textContent = "תמונה " + G.round;
   setSides(null);
   $("stage").classList.add("hide");
@@ -452,8 +590,8 @@ function layoutPic() {
 // ---------- חידות על תמונות ----------
 const FX_STRENGTH = { zoom: { easy: 0.5, medium: 0.32, hard: 0.2 }, blur: { easy: 5, medium: 9, hard: 14 }, tiles: { easy: 2, medium: 3, hard: 4 } };
 function setupFx() {
-  G.fx = G.item.fx || null; G.fxOn = !!G.fx; G.zoom = null; G.tileOrder = null;
-  if (G.fx === "zoom") {
+  G.fx = G.item.fx || null; G.fxOn = !!G.fx; G.zoom = G.item.zoomSeed || null; G.tileOrder = G.item.tileSeed || null;
+  if (G.fx === "zoom" && !G.zoom) {
     const s = FX_STRENGTH.zoom[G.item.fxLevel] || 0.32;
     const pad = Math.min(0.12, (1 - s) / 2);
     G.zoom = { s, x: pad + Math.random() * (1 - s - 2 * pad), y: pad + Math.random() * (1 - s - 2 * pad) };
@@ -521,16 +659,16 @@ function openPicture() {
 // 10 שניות לענות. אם לא לחצו "תראו תשובה" עד אז — התשובה נפתחת לבד
 const ANSWER_SECONDS = 10;
 let answerTimer = null;
-function startAnswerTimer(p) {
+function startAnswerTimer(p, seconds, onUp) {
   stopAnswerTimer();
-  let left = ANSWER_SECONDS;
+  let left = seconds || ANSWER_SECONDS;
   const el = $("timer");
-  el.style.setProperty("--tc", p === "blue" ? "var(--blue)" : "var(--red)");
+  el.style.setProperty("--tc", p === "blue" ? "var(--blue)" : p === "red" ? "var(--red)" : "var(--gold)");
   const paint = () => { el.textContent = "⏱ " + left; el.classList.toggle("low", left <= 3); };
   paint(); el.hidden = false;
   answerTimer = setInterval(() => {
     left--;
-    if (left <= 0) { stopAnswerTimer(); sfx.bad(); reveal(true); return; }
+    if (left <= 0) { stopAnswerTimer(); sfx.bad(); if (onUp) onUp(); else reveal(true); return; }
     if (left <= 3) sfx.tick();
     paint();
   }, 1000);
@@ -590,11 +728,14 @@ function score(correct) {
 }
 
 // כפתורי הלחיצה: pointerdown כדי שזה יהיה הכי מהר שאפשר
-$("bBlue").addEventListener("pointerdown", (e) => { e.preventDefault(); buzz("blue"); });
-$("bRed").addEventListener("pointerdown", (e) => { e.preventDefault(); buzz("red"); });
+$("bBlue").addEventListener("pointerdown", (e) => { e.preventDefault(); if (G.mode === "online") onlineBuzz(); else buzz("blue"); });
+$("bRed").addEventListener("pointerdown", (e) => { e.preventDefault(); if (G.mode === "online") onlineBuzz(); else buzz("red"); });
 $("acts").addEventListener("click", (e) => {
   const b = e.target.closest("[data-a]"); if (!b) return;
   const a = b.dataset.a;
+  if (a === "soloSkip") return soloAnswer("");
+  if (a === "decideYes") return onlineDecide(true);
+  if (a === "decideNo") return onlineDecide(false);
   if (a === "reveal") reveal();
   else if (a === "good") score(true);
   else if (a === "bad") score(false);
@@ -604,7 +745,7 @@ $("acts").addEventListener("click", (e) => {
 // גם מקלדת עובדת (טאבלט עם מקלדת / מחשב): ד=S, ף=;, רווח, נ=B, ט=Y, ח=J
 document.addEventListener("keydown", (e) => {
   if (!$("judge").hidden) { if (e.key === "Escape") closeJudge(); return; }
-  if ($("game").hidden || e.repeat) return;
+  if ($("game").hidden || e.repeat || G.mode !== "duo") return;
   const k = { KeyS: "blue", Semicolon: "red" }[e.code] || { "ד": "blue", "ף": "red" }[e.key];
   if (k) { e.preventDefault(); return buzz(k); }
   if (e.code === "Space" || e.key === " ") { e.preventDefault(); return G.phase === "nobody" ? nextRound() : reveal(); }
@@ -734,6 +875,385 @@ $("jSaid").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preve
   $("installClose").onclick = () => { $("installHelp").hidden = true; };
 })();
 
+// ---------- תשובה במיקרופון / בהקלדה ----------
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, onAnswer = null, heard = [];
+function askAnswer(cb) {
+  onAnswer = cb; heard = [];
+  $("ansIn").value = ""; $("ansBox").hidden = false;
+  const canMic = SR && IS_APP; // בקישור של Claude אין גישה למיקרופון
+  $("micBtn").hidden = !canMic;
+  if (canMic) startListening(); else setTimeout(() => $("ansIn").focus(), 50);
+}
+function submitAnswer() {
+  if (!onAnswer) return;
+  const typed = $("ansIn").value.trim();
+  const cb = onAnswer; onAnswer = null;
+  stopListening(); $("ansBox").hidden = true;
+  cb(typed, heard.filter((x) => x && x !== typed));
+}
+function startListening() {
+  if (!SR || rec) return;
+  try {
+    rec = new SR(); rec.lang = "he-IL"; rec.interimResults = true; rec.maxAlternatives = 4; rec.continuous = false;
+    rec.onresult = (e) => {
+      const r = e.results[e.results.length - 1];
+      $("ansIn").value = r[0].transcript.trim();
+      if (r.isFinal) { heard = [...r].map((x) => x.transcript.trim()); setTimeout(submitAnswer, 350); }
+    };
+    rec.onerror = () => { stopListening(); $("ansIn").focus(); };
+    rec.onend = () => { rec = null; $("micBtn").classList.remove("on"); };
+    rec.start(); $("micBtn").classList.add("on");
+  } catch (e) { rec = null; }
+}
+function stopListening() { try { rec && rec.abort(); } catch (e) {} rec = null; $("micBtn").classList.remove("on"); }
+$("micBtn").onclick = () => { if (rec) stopListening(); else startListening(); };
+$("ansGo").onclick = submitAnswer;
+$("ansIn").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); submitAnswer(); } });
+// בודק כמה ניסוחים (המיקרופון לפעמים שומע כמה אפשרויות) ובוחר את הכי טוב
+function judgeAll(texts, item) {
+  const cands = [item.a, ...(item.alt || [])];
+  let best = null;
+  for (const t of texts.filter(Boolean)) {
+    const r = localJudge(t, cands); if (!r) continue;
+    if (r.ok === true) return { ...r, text: t };
+    if (!best || (r.ok === "maybe" && best.ok === false)) best = { ...r, text: t };
+  }
+  return best || { ok: false, reason: "לא נאמרה תשובה.", text: "" };
+}
+
+// ---------- מצב יחיד ----------
+function startSolo(deck) {
+  setPanels("solo");
+  G.deck = deck; G.round = 0;
+  const all = freshFirst(deck.items).concat(freshFirst(deck.reserve));
+  G.solo = { total: target + 5, need: target, maxWrong: 6, ok: 0, no: 0 };
+  G.queue = all.slice(0, G.solo.total);
+  $("gTitle").textContent = deck.icon + " " + deck.name + " · " + deck.levelName + " · לבד";
+  paintSolo(); show("game"); keepAwake(); soloNext();
+}
+function paintSolo() {
+  const s = G.solo;
+  $("soloOk").textContent = s.ok; $("soloNo").textContent = s.no;
+  $("soloOkLbl").textContent = "נכונות מתוך " + s.need; $("soloNoLbl").textContent = "טעויות מתוך " + s.maxWrong;
+}
+function soloNext() {
+  const s = G.solo;
+  if (s.ok >= s.need) return soloOver(true);
+  if (s.no >= s.maxWrong || !G.queue.length) return soloOver(false);
+  G.round++;
+  $("gRound").textContent = "תמונה " + G.round + " מתוך " + s.total;
+  prepPicture(G.queue.shift());
+  G.phase = "countdown";
+  acts("מתכוננים…");
+  countdown(() => {
+    G.phase = "answering";
+    acts(`מה זה? <button class="act" data-a="soloSkip">🙈 לא יודע</button>`);
+    startAnswerTimer(null, 15, () => soloAnswer($("ansIn").value.trim(), heard));
+    askAnswer((typed, more) => soloAnswer(typed, more));
+  });
+}
+async function soloAnswer(typed, more) {
+  if (G.phase !== "answering") return;
+  G.phase = "checking";
+  stopAnswerTimer(); stopListening(); onAnswer = null; $("ansBox").hidden = true;
+  let r = judgeAll([typed, ...(more || [])], G.item);
+  // בקישור של Claude: אם השופט הפשוט לא בטוח — שואלים את Claude
+  if (r.ok !== true && r.text && sampleFn) {
+    acts("השופט חושב…");
+    try { const c = await claudeJudge(r.text); r = { ok: !!c.ok, reason: String(c.reason || ""), text: r.text }; } catch (e) {}
+  }
+  if (r.ok === "maybe") {
+    G.phase = "decide";
+    showAnswerOnStage();
+    acts(`<span style="flex-basis:100%">אמרת: "${escapeHtml(r.text)}". ${escapeHtml(r.reason)}</span>
+      <button class="act good big" data-a="soloYes">✓ נחשב</button><button class="act bad big" data-a="soloNo">✗ לא נחשב</button>`);
+    return;
+  }
+  soloResult(r.ok === true, r.text);
+}
+function soloResult(ok, text) {
+  const s = G.solo;
+  G.phase = "scored";
+  if (!document.querySelector(".answer")) showAnswerOnStage();
+  if (ok) s.ok++; else s.no++;
+  paintSolo();
+  flash(ok, ok ? "✓ נכון!" : text ? "✗ טעות" : "⏰ לא ענית");
+  acts(ok ? "יפה! ✓" : text ? `אמרת: "${escapeHtml(text)}"` : "");
+  later(soloNext, ok ? 1500 : 2300);
+}
+$("acts").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-a]"); if (!b || G.phase !== "decide") return;
+  if (b.dataset.a === "soloYes") soloResult(true, ""); else if (b.dataset.a === "soloNo") soloResult(false, "·");
+});
+function soloOver(won) {
+  clearTimers(); stopAnswerTimer(); G.phase = "over";
+  const s = G.solo;
+  $("winTxt").textContent = won ? "ניצחת! 🏆" : "נפסלת 😅";
+  $("fBlue").textContent = s.ok + " ✓"; $("fRed").textContent = s.no + " ✗";
+  show("over");
+  if (won) { sfx.win(); confetti("blue"); } else sfx.bad();
+}
+const escapeHtml = (t) => String(t || "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+async function claudeJudge(said) {
+  return sampleFn.json(`אתה השופט במשחק חידון תמונות בעברית.
+קטגוריה: ${G.deck.name}
+חוקי הקטגוריה: ${G.deck.rules}
+התשובה הנכונה: ${G.item.a}
+שמות נוספים שכבר ידוע שנחשבים: ${(G.item.alt || []).join(", ") || "אין"}
+מה שהשחקן אמר (אולי דרך מיקרופון, אז יכולות להיות טעויות שמיעה קטנות): "${said}"
+כללי שיפוט: שם מקוצר שכולם משתמשים בו ומזהה רק את זה — נחשב. כללי מדי — לא נחשב. שגיאת כתיב/שמיעה או תעתיק — נחשב. דבר אחר — לא נחשב.
+ענה רק ב-JSON: {"ok": true או false, "reason": "משפט קצר בעברית פשוטה"}`, { modelTier: "quick" });
+}
+
+// ---------- אונליין (רק באפליקציה) ----------
+// שני הטלפונים מדברים דרך שרת הודעות חינמי (MQTT). מי שיוצר את החדר מנהל את המשחק.
+const BROKERS = ["wss://broker.emqx.io:8084/mqtt", "wss://test.mosquitto.org:8081"];
+const NET = { client: null, topic: "", role: null, code: "", me: Math.random().toString(36).slice(2, 8) };
+const O = {};
+function loadMqtt() {
+  if (window.mqtt) return Promise.resolve();
+  return new Promise((ok, bad) => {
+    const s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js";
+    s.onload = ok; s.onerror = () => bad(new Error("no internet")); document.head.append(s);
+  });
+}
+function netConnect(i) {
+  return new Promise((ok, bad) => {
+    const c = window.mqtt.connect(BROKERS[i], { connectTimeout: 7000, reconnectPeriod: 2000, clean: true });
+    const t = setTimeout(() => { c.end(true); bad(new Error("timeout")); }, 8000);
+    c.on("connect", () => { clearTimeout(t); ok(c); });
+    c.on("error", () => {});
+  });
+}
+async function netOpen(code, brokerIdx) {
+  await loadMqtt();
+  NET.client = await netConnect(brokerIdx);
+  NET.code = code; NET.topic = "hazira-dg/v1/" + code;
+  NET.client.subscribe(NET.topic, { qos: 1 });
+  NET.client.on("message", (topic, payload) => {
+    let m; try { m = JSON.parse(payload.toString()); } catch (e) { return; }
+    if (m.from === NET.me) return;
+    onNet(m);
+  });
+}
+function send(type, data) { if (NET.client) NET.client.publish(NET.topic, JSON.stringify({ type, from: NET.me, ...data }), { qos: 1 }); }
+function netLeave() { try { send("bye", {}); NET.client && NET.client.end(true); } catch (e) {} NET.client = null; NET.role = null; clearTimers(); }
+
+async function hostRoom(c) {
+  $("loadMsg").textContent = "יוצר חדר…"; show("loading");
+  try {
+    let idx = 0, ok = false;
+    for (; idx < BROKERS.length && !ok; idx++) {
+      try { await loadMqtt(); NET.client = await netConnect(idx); ok = true; } catch (e) {}
+    }
+    if (!ok) throw new Error();
+    idx--;
+    const code = String(idx + 1) + String(Math.floor(1000 + Math.random() * 9000));
+    NET.client.end(true);
+    await netOpen(code, idx);
+    NET.role = "host";
+    Object.assign(O, { cat: c, level, target, deck: await buildDeck(c), joined: false });
+    $("lobbyCode").textContent = code;
+    $("lobbyTitle").textContent = c.icon + " " + c.name + " · " + LEVEL_NAME[level] + " · עד " + target;
+    show("lobby");
+  } catch (e) {
+    show("home"); $("hErr").textContent = "לא הצלחתי ליצור חדר. בדקו שיש אינטרנט ונסו שוב."; $("hErr").hidden = false;
+  }
+}
+$("lobbyCancel").onclick = () => { netLeave(); show("home"); };
+$("shareCode").onclick = async () => {
+  const text = "בוא לשחק איתי בהזירה! 🔵🆚🔴 הקוד: " + NET.code + "\nhttps://dandooger.github.io/hazira/";
+  try { if (navigator.share) await navigator.share({ text }); else { await navigator.clipboard.writeText(text); $("lobbyNote").textContent = "הקוד הועתק! הדבק אותו בוואטסאפ לחבר."; } } catch (e) {}
+};
+$("joinGo").onclick = async () => {
+  const code = $("joinCode").value.replace(/\D/g, "");
+  $("joinErr").hidden = true;
+  if (code.length !== 5 || !BROKERS[+code[0] - 1]) { $("joinErr").textContent = "הקוד צריך להיות 5 ספרות."; $("joinErr").hidden = false; return; }
+  $("loadMsg").textContent = "מתחבר לחדר…"; show("loading");
+  try {
+    await netOpen(code, +code[0] - 1);
+    NET.role = "guest"; O.joinTimer = setTimeout(() => { if (!O.started) { netLeave(); show("home"); $("joinErr").textContent = "לא מצאתי חדר עם הקוד הזה. בדקו אותו ונסו שוב."; $("joinErr").hidden = false; } }, 9000);
+    O.started = false;
+    send("join", {});
+  } catch (e) { show("home"); $("joinErr").textContent = "לא הצלחתי להתחבר. בדקו שיש אינטרנט."; $("joinErr").hidden = false; }
+};
+
+// מי אני ומי החבר (המארח כחול, המצטרף אדום)
+const myColor = () => (NET.role === "host" ? "blue" : "red");
+const meKey = () => NET.role;
+const themKey = () => (NET.role === "host" ? "guest" : "host");
+function paintOnline() {
+  const mine = O.score[meKey()], theirs = O.score[themKey()];
+  const me = myColor() === "blue" ? "Blue" : "Red", them = me === "Blue" ? "Red" : "Blue";
+  $("sc" + me).textContent = mine; $("sc" + them).textContent = theirs;
+  $("bar" + me).style.width = Math.min(100, mine / O.target * 100) + "%";
+  $("bar" + them).style.width = Math.min(100, theirs / O.target * 100) + "%";
+}
+function startOnlineScreen() {
+  setPanels("online");
+  const mine = myColor() === "blue" ? $("bBlue") : $("bRed"), theirs = mine === $("bBlue") ? $("bRed") : $("bBlue");
+  mine.querySelector(".who").textContent = "אני"; theirs.querySelector(".who").textContent = "החבר";
+  theirs.classList.add("dim"); theirs.querySelector(".tap").textContent = ""; mine.querySelector(".tap").textContent = "לחץ!";
+  $("gTitle").textContent = O.title;
+  paintOnline(); show("game"); keepAwake();
+}
+// מזהה תמונה כך שהטלפון השני יכול לבנות אותה בעצמו
+async function itemFromRef(ref) {
+  const d = await getCat(ref.c);
+  const it = d.levels[ref.lv][ref.i];
+  return ref.fx ? { ...it, fx: ref.fx, fxLevel: ref.fxLevel, hint: ref.hint } : it;
+}
+
+// ---- המארח מנהל את המשחק ----
+function hostStart() {
+  O.score = { host: 0, guest: 0 }; O.n = 0; O.title = O.deck.icon + " " + O.deck.name + " · " + O.deck.levelName;
+  O.queue = freshFirst(O.deck.items); O.reserve = freshFirst(O.deck.reserve);
+  send("start", { title: O.title, target: O.target, score: O.score });
+  startOnlineScreen();
+  later(hostRound, 800);
+}
+function hostRound() {
+  if (!O.queue.length) O.queue = O.reserve.length ? O.reserve.splice(0) : freshFirst(O.deck.items);
+  const it = O.queue.shift();
+  O.n++; O.buzzes = []; O.answerer = null; O.result = null;
+  // אותו זום / סדר חתיכות לשני הטלפונים
+  const fxSeed = { zoom: null, tiles: null };
+  if (it.fx === "zoom") { const s = { easy: 0.5, medium: 0.32, hard: 0.2 }[it.fxLevel] || 0.32, pad = Math.min(0.12, (1 - s) / 2); fxSeed.zoom = { s, x: pad + Math.random() * (1 - s - 2 * pad), y: pad + Math.random() * (1 - s - 2 * pad) }; }
+  if (it.fx === "tiles") { const n = { easy: 2, medium: 3, hard: 4 }[it.fxLevel] || 3, order = [...Array(n * n).keys()]; do { shuffleArr(order); } while (order.every((v, i) => v === i)); fxSeed.tiles = order; }
+  const msg = { n: O.n, ref: it.ref, fxSeed, score: O.score };
+  send("round", msg);
+  playRound(msg, it);
+}
+function hostGotBuzz(who, rt, n) {
+  if (n !== O.n || O.answerer) return;
+  O.buzzes.push({ who, rt });
+  if (O.buzzes.length === 1) later(() => {
+    // מי שלחץ הכי מהר (לפי הזמן שעבר אצלו מאז שהתמונה נפתחה) — כדי שהאינטרנט לא ישפיע
+    O.buzzes.sort((a, b) => a.rt - b.rt);
+    O.answerer = O.buzzes[0].who;
+    send("answering", { n: O.n, who: O.answerer });
+    onAnswering(O.answerer);
+  }, 450);
+}
+function hostGotAnswer(texts, n) {
+  if (n !== O.n || O.result) return;
+  const r = judgeAll(texts, G.item);
+  if (r.ok === "maybe") {
+    O.pending = r;
+    const judge = O.answerer === "host" ? "guest" : "host";
+    O.pendingText = r.text;
+    send("confirm", { n: O.n, judge, text: r.text, reason: r.reason });
+    onConfirm(judge, r.text, r.reason);
+    return;
+  }
+  hostFinish(r.ok === true, r.text);
+}
+function hostFinish(ok, text, none) {
+  if (O.result) return;
+  O.result = true; clearTimers(); stopAnswerTimer();
+  let point = null;
+  if (!none) { point = ok ? O.answerer : (O.answerer === "host" ? "guest" : "host"); O.score[point]++; }
+  const msg = { n: O.n, ok, text, none: !!none, answerer: O.answerer, point, score: O.score };
+  send("result", msg); showResult(msg);
+  const w = point && O.score[point] >= O.target ? point : null;
+  if (w) later(() => { send("over", { winner: w, score: O.score }); onlineOver(w); }, 2200);
+  else later(hostRound, 2600);
+}
+
+// ---- מה ששני הטלפונים עושים ----
+async function playRound(msg, item) {
+  G.phase = "countdown"; O.n = msg.n; O.score = msg.score; O.myBuzzSent = false;
+  const it = item || await itemFromRef(msg.ref);
+  if (msg.fxSeed && msg.fxSeed.zoom) it.zoomSeed = msg.fxSeed.zoom;
+  if (msg.fxSeed && msg.fxSeed.tiles) it.tileSeed = msg.fxSeed.tiles;
+  prepPicture(it);
+  if (it.zoomSeed) G.zoom = it.zoomSeed;
+  if (it.tileSeed) G.tileOrder = it.tileSeed;
+  setSides(null); paintOnline();
+  $("gRound").textContent = "תמונה " + msg.n;
+  acts("מתכוננים…");
+  countdown(() => {
+    G.phase = "open"; O.openedAt = performance.now();
+    acts("מי יודע? לחץ על הכפתור שלך!");
+    // אם אף אחד לא לוחץ 12 שניות — מדלגים
+    if (NET.role === "host") later(() => { if (!O.answerer && !O.result) hostFinish(false, "", true); }, 12000);
+  });
+}
+function onlineBuzz() {
+  if (G.phase !== "open" || O.myBuzzSent) return;
+  O.myBuzzSent = true; buzzVibrate();
+  const rt = performance.now() - O.openedAt;
+  if (NET.role === "host") hostGotBuzz("host", rt, O.n); else send("buzz", { n: O.n, rt });
+  acts("לחצת! מחכים…");
+}
+function onAnswering(who) {
+  G.phase = "answering";
+  const color = who === "host" ? "blue" : "red";
+  setSides(color);
+  sfx[color === "blue" ? "buzzBlue" : "buzzRed"]();
+  const mine = who === NET.role;
+  startAnswerTimer(color, 15, () => { if (mine) submitAnswer(); });
+  if (mine) {
+    acts("אתה עונה! אמור את התשובה 🎤");
+    askAnswer((typed, more) => {
+      const texts = [typed, ...(more || [])];
+      acts("שלחת: \"" + escapeHtml(typed || "…") + "\". השופט בודק…");
+      if (NET.role === "host") hostGotAnswer(texts, O.n); else send("answer", { n: O.n, texts });
+    });
+  } else acts("החבר עונה… ⏳");
+  // ביטחון: אם המארח לא קיבל תשובה אחרי 20 שניות — טעות
+  if (NET.role === "host") later(() => { if (!O.result && !O.pending) hostFinish(false, ""); }, 20000);
+}
+function onConfirm(judge, text, reason) {
+  G.phase = judge === NET.role ? "confirm" : "waitConfirm";
+  stopAnswerTimer();
+  showAnswerOnStage();
+  if (judge === NET.role) acts(`<span style="flex-basis:100%">החבר אמר: "${escapeHtml(text)}". ${escapeHtml(reason)} מה אתה אומר?</span>
+    <button class="act good big" data-a="decideYes">✓ נחשב</button><button class="act bad big" data-a="decideNo">✗ לא נחשב</button>`);
+  else acts(`אמרת: "${escapeHtml(text)}". השופט לא בטוח — החבר מחליט…`);
+}
+function onlineDecide(ok) {
+  if (G.phase !== "confirm") return;
+  G.phase = "decided";
+  if (NET.role === "host") { O.pending = null; hostFinish(ok, O.pendingText || ""); } else send("decide", { n: O.n, ok });
+}
+function showResult(m) {
+  G.phase = "scored"; clearTimers(); stopAnswerTimer(); stopListening(); onAnswer = null; $("ansBox").hidden = true;
+  O.score = m.score; paintOnline();
+  if (!document.querySelector(".answer")) showAnswerOnStage();
+  if (m.none) { acts("אף אחד לא לחץ. לתמונה הבאה…"); return; }
+  const answererIsMe = m.answerer === NET.role;
+  const iGot = m.point === NET.role;
+  flash(m.ok, m.ok ? "✓ נכון!" : m.text ? "✗ טעות" : "⏰ נגמר הזמן");
+  acts((answererIsMe ? "ענית" : "החבר ענה") + (m.text ? `: "${escapeHtml(m.text)}"` : "") + " · נקודה " + (iGot ? "לך! 🎉" : "לחבר"));
+}
+function onlineOver(w) {
+  clearTimers(); G.phase = "over";
+  const iWon = w === NET.role;
+  $("winTxt").textContent = iWon ? "ניצחת! 🏆" : "החבר ניצח 😅";
+  $("fBlue").textContent = O.score[meKey()]; $("fRed").textContent = O.score[themKey()];
+  show("over"); if (iWon) { sfx.win(); confetti(myColor()); }
+}
+function onNet(m) {
+  if (m.type === "bye") { if (NET.role && !$("game").hidden) { clearTimers(); acts("החבר יצא מהמשחק 👋"); } return; }
+  if (NET.role === "host") {
+    if (m.type === "join" && !O.joined) { O.joined = true; hostStart(); }
+    else if (m.type === "buzz") hostGotBuzz("guest", m.rt, m.n);
+    else if (m.type === "answer") hostGotAnswer(m.texts || [], m.n);
+    else if (m.type === "decide" && m.n === O.n && O.pending) { const t = O.pending.text; O.pending = null; hostFinish(!!m.ok, t); }
+    return;
+  }
+  // המצטרף
+  if (m.type === "start") { O.started = true; clearTimeout(O.joinTimer); O.title = m.title; O.target = m.target; O.score = m.score; startOnlineScreen(); }
+  else if (m.type === "round") playRound(m);
+  else if (m.type === "answering" && m.n === O.n) onAnswering(m.who);
+  else if (m.type === "confirm" && m.n === O.n) onConfirm(m.judge, m.text, m.reason);
+  else if (m.type === "result" && m.n === O.n) showResult(m);
+  else if (m.type === "over") onlineOver(m.winner);
+}
+
 // ---------- ניצחון ----------
 function gameOver(w) {
   clearTimers(); stopAnswerTimer(); G.phase = "over";
@@ -741,9 +1261,9 @@ function gameOver(w) {
   $("fBlue").textContent = G.score.blue; $("fRed").textContent = G.score.red;
   show("over"); sfx.win(); confetti(w);
 }
-$("again").onclick = () => { stopConfetti(); startGame(G.deck); };
+$("again").onclick = () => { stopConfetti(); if (G.mode === "solo") startSolo(G.deck); else if (G.mode === "online") { netLeave(); show("home"); } else startGame(G.deck); };
 $("toMenu").onclick = () => { stopConfetti(); show("home"); };
-$("quit").onclick = () => { clearTimers(); stopAnswerTimer(); G.phase = "idle"; show("home"); };
+$("quit").onclick = () => { clearTimers(); stopAnswerTimer(); stopListening(); G.phase = "idle"; if (G.mode === "online") netLeave(); show("home"); };
 
 let confRaf;
 function confetti(w) {
