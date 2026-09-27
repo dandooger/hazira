@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/favicon.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<script>window.HAZIRA_IS_APP = true; window.HAZIRA_VERSION = "1790529976093";</script>
+<script>window.HAZIRA_IS_APP = true; window.HAZIRA_VERSION = "1790530572748";</script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
 <body>
@@ -1289,7 +1289,15 @@ function stopConfetti() { cancelAnimationFrame(confRaf); }
 // עדכון אוטומטי: בכל פתיחה של האפליקציה בודקים אם יש גרסה חדשה, ואם כן — מתעדכנים לבד
 (function () {
   let reloading = false;
-  const reloadNow = () => { if (reloading) return; reloading = true; location.reload(); };
+  const reloadNow = () => {
+    if (reloading) return;
+    // שומר מפני לולאה: לא יותר מ-3 רענונים בדקה (אם השרת עוד מגיש דף ישן לכמה דקות)
+    let n = [];
+    try { n = JSON.parse(sessionStorage.getItem("hazira-reloads") || "[]").filter((t) => Date.now() - t < 60000); } catch (e) {}
+    if (n.length >= 3) return;
+    try { sessionStorage.setItem("hazira-reloads", JSON.stringify([...n, Date.now()])); } catch (e) {}
+    reloading = true; location.reload();
+  };
   async function check() {
     try {
       const r = await fetch("version.json?t=" + Date.now(), { cache: "no-store" });
