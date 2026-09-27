@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/favicon.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<script>window.HAZIRA_IS_APP = true; window.HAZIRA_VERSION = "1790538148626";</script>
+<script>window.HAZIRA_IS_APP = true; window.HAZIRA_VERSION = "1790539541708";</script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
 <body>
@@ -434,9 +434,12 @@ let seen = {};
 try { seen = JSON.parse(localStorage.getItem(SEEN_KEY) || "{}"); } catch (e) { seen = {}; }
 const seenKey = (it) => (it.w || it.emoji || it.a) + "|" + (it.fx || "");
 function markSeen(it) { const k = seenKey(it); seen[k] = (seen[k] || 0) + 1; try { localStorage.setItem(SEEN_KEY, JSON.stringify(seen)); } catch (e) {} }
-// מערבבים, ואז מקדימים את מה שראית הכי פחות פעמים
-function freshFirst(arr) {
-  return shuffleArr([...arr]).map((it, i) => [it, seen[seenKey(it)] || 0, i]).sort((a, b) => a[1] - b[1] || a[2] - b[2]).map((x) => x[0]);
+// הסדר של כל משחק: קודם מה שראית הכי מעט. כשכל התמונות של הרמה כבר נראו,
+// תמונה חדשה מרמה קרובה באה לפני תמונה שכבר ראית — ככה כל משחק שונה
+function deckOrder(items, reserve) {
+  const all = [...items.map((it) => [it, 0]), ...reserve.map((it) => [it, 1])];
+  return shuffleArr(all).map(([it, r], i) => [it, seen[seenKey(it)] || 0, r, i])
+    .sort((a, b) => a[1] - b[1] || a[2] - b[2] || a[3] - b[3]).map((x) => x[0]);
 }
 
 // רזרבה: אם התמונות של הרמה נגמרות, ממשיכים עם הרמה הכי קרובה
@@ -544,7 +547,7 @@ new MutationObserver(() => syncMirror())
 function startGame(deck) {
   const keys = PLAYERS.slice(0, players).map((p) => p.k);
   setPanels("duo", keys);
-  G.deck = deck; G.queue = freshFirst(deck.items); G.reserve = freshFirst(deck.reserve);
+  G.deck = deck; G.queue = deckOrder(deck.items, deck.reserve); G.reserve = [];
   G.score = Object.fromEntries(keys.map((k) => [k, 0])); G.round = 0;
   $("gTitle").textContent = deck.icon + " " + deck.name + " · " + deck.levelName;
   paintScore();
@@ -615,7 +618,7 @@ function nextRound() {
   clearTimers(); stopAnswerTimer();
   $("judge").hidden = true;
   document.querySelectorAll(".answer,.flash").forEach((n) => n.remove());
-  if (!G.queue.length) G.queue = G.reserve.length ? G.reserve.splice(0) : freshFirst(G.deck.items);
+  if (!G.queue.length) G.queue = deckOrder(G.deck.items, G.deck.reserve);
   G.item = G.queue.shift(); G.round++; G.buzzer = null; markSeen(G.item);
   $("gRound").textContent = "תמונה " + G.round;
   setSides(null);
@@ -883,8 +886,16 @@ function lev(a, b) {
   return d[a.length][b.length];
 }
 const tol = (n) => (n <= 3 ? 0 : n <= 6 ? 1 : 2);
+// איך המילה נשמעת: אותיות עם צליל דומה נחשבות אותו דבר (ב/פ/וו, כ/ק/ח, ט/ת, ס/ש/ז/צ),
+// אותיות תנועה (א ו י ע ה) נחשבות "תנועה" אחת, ו-ס בסוף (כמו "וולבס") לא חובה. ככה "וולף" = "וולבס"
+const PH = { "פ": "ב", "ק": "כ", "ח": "כ", "ט": "ת", "ש": "ס", "ז": "ס", "צ": "ס" };
+const jPhon = (s) => {
+  const p = jFlat(s).replace(/וו/g, "ב").replace(/^ו/, "ב").replace(/ה$/, "")
+    .replace(/(?!^)[אעה]/g, "*").replace(/./g, (c) => PH[c] || c).replace(/(.)\1+/g, "$1").replace(/\*$/, "");
+  return p.length > 3 ? p.replace(/ס$/, "") : p;
+};
 function localJudge(said, cands) {
-  const A = jFlat(said), SA = jSkel(said), wa = jWords(said);
+  const A = jFlat(said), SA = jSkel(said), wa = jWords(said), PA = jPhon(said);
   if (!A) return null;
   let maybe = null;
   for (const c of cands) {
@@ -894,6 +905,8 @@ function localJudge(said, cands) {
     if (lev(A, B) <= tol(B.length)) return { ok: true, reason: `רק שגיאת כתיב קטנה. התשובה: "${c}".` };
     if (B.length >= 4 && SA === SB) return { ok: true, reason: `אותה מילה בכתיב קצת אחר. התשובה: "${c}".` };
     if (B.length >= 3 && A.includes(B)) return { ok: true, reason: `אמרתם את התשובה ("${c}") עם עוד כמה מילים.` };
+    const PB = jPhon(c);
+    if (B.length >= 5 && PA === PB && lev(A, B) <= tol(B.length) + 1) return { ok: true, reason: `נשמע כמו התשובה (אולי המיקרופון שמע קצת אחרת). התשובה: "${c}".` };
     const part = (A.length >= 3 && B.includes(A)) || (wa.length && wa.every((w) => wb.some((x) => x === w || (w.length >= 4 && lev(w, x) <= 1))));
     if (part && !maybe) maybe = c;
   }
@@ -1022,7 +1035,7 @@ function judgeAll(texts, item) {
 function startSolo(deck) {
   setPanels("solo");
   G.deck = deck; G.round = 0;
-  const all = freshFirst(deck.items).concat(freshFirst(deck.reserve));
+  const all = deckOrder(deck.items, deck.reserve);
   G.solo = { total: target + 5, need: target, maxWrong: 6, ok: 0, no: 0 };
   G.queue = all.slice(0, G.solo.total);
   $("gTitle").textContent = deck.icon + " " + deck.name + " · " + deck.levelName + " · לבד";
@@ -1204,13 +1217,13 @@ async function itemFromRef(ref) {
 // ---- המארח מנהל את המשחק ----
 function hostStart() {
   O.score = { host: 0, guest: 0 }; O.n = 0; O.title = O.deck.icon + " " + O.deck.name + " · " + O.deck.levelName;
-  O.queue = freshFirst(O.deck.items); O.reserve = freshFirst(O.deck.reserve);
+  O.queue = deckOrder(O.deck.items, O.deck.reserve); O.reserve = [];
   send("start", { title: O.title, target: O.target, score: O.score });
   startOnlineScreen();
   later(hostRound, 800);
 }
 function hostRound() {
-  if (!O.queue.length) O.queue = O.reserve.length ? O.reserve.splice(0) : freshFirst(O.deck.items);
+  if (!O.queue.length) O.queue = deckOrder(O.deck.items, O.deck.reserve);
   const it = O.queue.shift();
   O.n++; O.buzzes = []; O.answerer = null; O.result = null; O.dunno = {}; O.readyOpen = false;
   // אותו זום / סדר חתיכות לשני הטלפונים
