@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/favicon-cheetah3.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon-cheetah3.png">
-<script>window.HAZIRA_IS_APP = true; window.HAZIRA_VERSION = "1790582584458";</script>
+<script>window.HAZIRA_IS_APP = true; window.HAZIRA_VERSION = "1790589915169"; window.HAZIRA_ENV = "production";</script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
 <body>
@@ -125,10 +125,11 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
   text-shadow:0 0 40px rgba(255,255,255,.8);pointer-events:none}
 .count.tick{animation:tick 1s ease-out}
 @keyframes tick{0%{transform:scale(1.6);opacity:0}25%{opacity:1}100%{transform:scale(.8);opacity:.2}}
-.timer{position:absolute;top:10px;left:50%;transform:translateX(-50%);font-family:var(--display);font-size:32px;line-height:1;
-  background:rgba(26,20,5,.88);color:#fff;border:3px solid var(--tc,#FFC400);border-radius:999px;padding:7px 20px;min-width:3em;text-align:center;font-variant-numeric:tabular-nums}
+/* הטיימר בפס העליון, ליד השם — לא על התמונה */
+.timer{flex:none;font-family:var(--display);font-size:26px;line-height:1;
+  background:rgba(26,20,5,.88);color:#fff;border:3px solid var(--tc,#FFC400);border-radius:999px;padding:6px 16px;min-width:3em;text-align:center;font-variant-numeric:tabular-nums}
 .timer.low{color:var(--bad);border-color:var(--bad);animation:pulse .5s ease-in-out infinite alternate}
-@keyframes pulse{to{transform:translateX(-50%) scale(1.12)}}
+@keyframes pulse{to{transform:scale(1.12)}}
 .answer{position:absolute;inset-inline:0;bottom:0;padding:12px 14px;background:linear-gradient(0deg,rgba(0,0,0,.92),rgba(0,0,0,.6));color:#fff;text-align:center;
   font-family:var(--display);font-size:clamp(26px,8vw,44px);animation:up .3s ease-out}
 .answer small{display:block;font-family:var(--body);font-size:14px;color:#D8D2BE;margin-top:2px}
@@ -227,7 +228,9 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
 .hero .badge{position:absolute;top:14px;left:calc(50% - 48px);width:96px;height:96px;border-radius:24px;opacity:0;box-shadow:0 0 0 3px #FFC400,0 0 24px rgba(255,196,0,.6)}
 .hero .ttl{position:absolute;top:116px;inset-inline:0;margin:0;text-align:center;font-family:var(--display);font-weight:400;font-size:clamp(46px,14vw,64px);line-height:1;direction:rtl}
 .hero .ttl span{display:inline-block;color:transparent;-webkit-text-stroke:2px #1A1405;opacity:0;
-  background:radial-gradient(circle at 30% 35%,#1A1405 0 3px,transparent 4px) 0 0/24px 20px,radial-gradient(circle at 75% 70%,#1A1405 0 2.5px,transparent 3.5px) 0 0/17px 15px,linear-gradient(180deg,#FFE27A,#F5B400);
+  /* נקודות של צ'יטה בסדר קבוע (שורות מתחלפות), וכל המילה היא דוגמה אחת רציפה: JS מזיז כל אות לפי המקום שלה */
+  background:radial-gradient(3.4px 2.8px at 4px 3.5px,#1A1405 0 85%,transparent 100%),radial-gradient(3.4px 2.8px at 11px 10.5px,#1A1405 0 85%,transparent 100%),linear-gradient(180deg,#FFE27A,#F5B400);
+  background-size:14px 14px,14px 14px,100% 100%;background-position:var(--ox,0) var(--oy,0),var(--ox,0) var(--oy,0),0 0;
   -webkit-background-clip:text;background-clip:text}
 .hero .sub{position:absolute;top:190px;inset-inline:0;display:flex;justify-content:center;gap:8px;font-family:var(--display);font-size:20px;color:#FFE27A}
 .hero .sub span{opacity:0;display:inline-block}
@@ -241,6 +244,11 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
 .ringwrap .prog{stroke:var(--blue);stroke-linecap:round;transition:stroke-dashoffset .8s ease}
 .lvl{position:absolute;bottom:-4px;inset-inline-start:-4px;background:var(--ink);color:#FFC400;font-family:var(--display);border-radius:999px;min-width:26px;height:26px;padding:0 6px;display:grid;place-items:center;font-size:15px;border:2px solid var(--ground)}
 .profcorner{position:absolute;top:32px;inset-inline-start:28px;z-index:3;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;padding:0}
+.psearch{font:inherit;font-size:17px;padding:9px 12px;border-radius:12px;border:2px solid var(--line);background:#fff;color:var(--ink)}
+.pitem{cursor:pointer}
+.gearbtn{position:absolute;top:32px;inset-inline-end:28px;z-index:3;width:42px;height:42px;border-radius:50%;border:2px solid #1A1405;background:#FFC400;font-size:22px;display:grid;place-items:center;padding:0}
+.act[aria-pressed="true"]{border-color:var(--ink);background:#FFE27A}
+#wForm input{font:inherit;font-size:19px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink)}
 .ptsdot{background:#FFC400;color:#1A1405;border:2px solid #1A1405;border-radius:999px;padding:2px 9px;font-family:var(--display);font-size:14px;white-space:nowrap}
 #profile{max-width:640px;margin:0 auto;padding-block:18px 40px;display:flex;flex-direction:column;gap:16px}
 .profhead{display:flex;gap:16px;align-items:center}
@@ -264,6 +272,7 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
 
 <!-- בית -->
 <section id="home" class="screen">
+  <button class="gearbtn" id="gearBtn" aria-label="הגדרות">⚙️</button>
   <button class="profcorner" id="profBtn" aria-label="הפרופיל שלי"><span class="ringwrap" id="profRing"></span><span class="ptsdot" id="ptsDot">0 ⭐</span></button>
   <!-- פתיחה: הצ'יטה רצה עם ברקים, קופצת לתוך הלוגו, ואז השם מופיע. לחיצה = מההתחלה -->
   <div class="hero" id="hero" role="button" tabindex="0" aria-label="הצ'יטה · ראש בראש · זריזות · מחשבה (לחצו כדי לראות שוב)">
@@ -304,6 +313,7 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
     <span class="note">או בחר קטגוריה למטה כדי <b>ליצור חדר</b> ולשלוח קוד לחבר.</span>
     <div class="err" id="joinErr" hidden></div>
     <b>🟢 מחוברים עכשיו:</b>
+    <input class="psearch" id="homeSearch" type="search" placeholder="🔍 חיפוש לפי שם" autocomplete="off">
     <div class="plist" id="homeList" style="width:100%"></div>
   </div>
 
@@ -338,12 +348,32 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
     <div class="row" style="justify-content:center"><button class="go" id="shareCode">📤 שלח לחבר</button><button class="ghost" id="lobbyCancel">ביטול</button></div>
     <div class="spinner" style="width:40px;height:40px;border-width:5px"></div>
     <h2 style="font-size:20px">או הזמן מי שמחובר עכשיו:</h2>
+    <input class="psearch" id="lobbySearch" type="search" placeholder="🔍 חפש שחקן לפי שם" autocomplete="off" style="width:min(420px,100%)">
     <div class="plist" id="onlineList"></div>
     <div class="note" id="inviteNote" hidden></div>
   </div>
 </section>
 
 <!-- פרופיל -->
+<!-- הגדרות -->
+<section id="settings" class="screen" hidden>
+  <div style="max-width:640px;margin:0 auto;padding-block:18px 40px;display:flex;flex-direction:column;gap:16px">
+    <div class="row" style="justify-content:space-between"><h2>⚙️ הגדרות</h2><button class="ghost" id="setBack">חזרה ←</button></div>
+    <div class="lvlbar"><b id="setWho"></b><span class="note" id="setAcct"></span></div>
+    <button class="go" id="setLogin">🔑 התחברות לחשבון אחר</button>
+    <div class="lvlbar">
+      <b>🔒 שינוי סיסמה</b>
+      <form id="passForm" style="display:grid;gap:8px" autocomplete="on">
+        <input name="username" autocomplete="username" id="passUser" hidden>
+        <input id="newPass" type="password" autocomplete="new-password" placeholder="סיסמה חדשה (לפחות 4)" style="font:inherit;font-size:18px;padding:10px;border-radius:10px;border:1px solid var(--line);background:#fff">
+        <button class="act" type="submit">שמור סיסמה</button>
+        <div class="note" id="passMsg" hidden></div>
+      </form>
+    </div>
+    <div class="note">🔒 הסיסמה נשמרת מוצפנת. בכל זאת — תבחר סיסמה רק למשחק הזה.</div>
+  </div>
+</section>
+
 <section id="profile" class="screen" hidden>
   <div class="row" style="justify-content:space-between"><h2>הפרופיל שלי</h2><button class="ghost" id="profBack">חזרה ←</button></div>
   <div class="profhead"><span class="ringwrap" id="profBig"></span><input id="profName" maxlength="14" autocomplete="off" aria-label="שם משתמש"></div>
@@ -364,6 +394,7 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
 <section id="game" class="screen" hidden>
   <div class="topbar">
     <div class="title"><span id="gTitle"></span><small id="gRound"></small></div>
+    <div class="timer" id="timer" hidden></div>
     <button class="ghost" id="quit">יציאה</button>
   </div>
   <!-- 4-5 שחקנים: שורת כפתורים ותמונה הפוכות, בשביל מי שיושב מול הטלפון -->
@@ -371,7 +402,6 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
   <div class="stage mirror" id="stage2" hidden aria-hidden="true"></div>
   <div class="stage hide" id="stage">
     <div class="pic" id="picWrap"><img id="pic" alt=""><div class="emo" id="emo" hidden></div></div>
-    <div class="timer" id="timer" hidden></div>
     <div class="hintchip" id="hintchip" hidden></div>
     <div class="count" id="count"></div>
   </div>
@@ -403,12 +433,35 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
 <div class="modal" id="welcome" hidden>
   <div class="card" role="dialog" aria-labelledby="wH">
     <h3 id="wH">🐆 ברוך הבא לצ'יטה!</h3>
-    <div class="note">איך אתה רוצה שיקראו לך? זה השם שחברים יראו באונליין.</div>
-    <input id="wName" maxlength="14" placeholder="השם שלך" autocomplete="off">
-    <div class="note">בחר תמונה (אפשר לשנות אחר כך בפרופיל):</div>
-    <div class="avgrid" id="wGrid" style="max-height:170px;overflow:auto"></div>
-    <div class="err" id="wErr" hidden>צריך לכתוב שם 🙂</div>
-    <div class="row"><button class="go" id="wGo">יאללה, מתחילים!</button></div>
+    <div class="row" id="wTabs" style="gap:8px"><button class="act" id="wTabNew" type="button">✨ משתמש חדש</button><button class="act" id="wTabLogin" type="button">🔑 יש לי כבר חשבון</button></div>
+    <form id="wForm" style="display:grid;gap:10px" autocomplete="on">
+      <div class="note" id="wNote">איך אתה רוצה שיקראו לך? זה השם שחברים יראו באונליין.</div>
+      <input id="wName" name="username" maxlength="14" placeholder="שם משתמש" autocomplete="username">
+      <input id="wPass" name="password" type="password" placeholder="סיסמה (לפחות 4 אותיות או מספרים)" autocomplete="new-password">
+      <div id="wAvBox"><div class="note">בחר תמונה (אפשר לשנות אחר כך בפרופיל):</div>
+      <div class="avgrid" id="wGrid" style="max-height:150px;overflow:auto"></div></div>
+      <div class="err" id="wErr" hidden></div>
+      <div class="row"><button class="go" id="wGo" type="submit">יאללה, מתחילים!</button><button class="ghost" id="wCancel" type="button" hidden>ביטול</button></div>
+      <div class="note" id="wSafe" style="font-size:13px">🔒 תבחר סיסמה רק למשחק הזה, לא את הסיסמה של הג'ימייל.</div>
+    </form>
+  </div>
+</div>
+
+<!-- הפרופיל של שחקן אחר -->
+<div class="modal" id="pview" hidden>
+  <div class="card" role="dialog" aria-labelledby="pvName" style="text-align:center;justify-items:center">
+    <span class="ringwrap" id="pvAv"></span>
+    <h3 id="pvName"></h3>
+    <div class="lvlbar" style="width:100%"><b id="pvLvl"></b><div class="bar"><i id="pvBar"></i></div><span class="note" id="pvSt"></span></div>
+    <div class="row" style="justify-content:center"><button class="go" id="pvInvite" hidden>🎮 הזמן לשחק</button><button class="ghost" id="pvClose">סגור</button></div>
+  </div>
+</div>
+
+<!-- הודעה: השחקן השני יצא -->
+<div class="modal" id="leftMsg" hidden>
+  <div class="card" style="text-align:center;justify-items:center">
+    <h3 id="leftT">👋</h3>
+    <div class="row" style="justify-content:center"><button class="go" id="leftOk">הבנתי</button></div>
   </div>
 </div>
 
@@ -452,7 +505,7 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
 
 <script>
 const $ = (id) => document.getElementById(id);
-const show = (id) => { for (const s of ["home", "loading", "lobby", "game", "over", "profile"]) $(s).hidden = s !== id; if ((id === "home" || id === "over") && window.nextInvite) setTimeout(nextInvite, 400); };
+const show = (id) => { for (const s of ["home", "loading", "lobby", "game", "over", "profile", "settings"]) $(s).hidden = s !== id; if ((id === "home" || id === "over") && window.nextInvite) setTimeout(nextInvite, 400); };
 
 // ---------- צלילים ----------
 let ac;
@@ -721,7 +774,7 @@ function flash(ok, text) {
 }
 
 function nextRound() {
-  clearTimers(); stopAnswerTimer();
+  clearTimers(); stopAnswerTimer(); stopListening(); onAnswer = null;
   $("judge").hidden = true;
   document.querySelectorAll(".answer,.flash").forEach((n) => n.remove());
   if (!G.queue.length) G.queue = deckOrder(G.deck.items, G.deck.reserve);
@@ -877,14 +930,24 @@ function buzz(p) {
   G.buzzer = p; G.phase = "answering";
   setSides(p);
   sfx.buzz(p); buzzVibrate();
-  acts(`<span><span class="${cls[p]}">${heb[p]}</span> ראשון! תגיד את התשובה.</span>
+  const mic = !!(SR && IS_APP);
+  acts(`<span><span class="${cls[p]}">${heb[p]}</span> ראשון! ${mic ? "תגיד את התשובה 🎤" : "תגיד את התשובה."}</span>
     <button class="act big" data-a="reveal">👀 תראו תשובה</button>`);
   startAnswerTimer(p);
+  // ביחד: המיקרופון מקשיב לבד. אמרו נכון — נקודה מיד. לא בטוח — פותחים את התשובה והשחקנים מחליטים
+  if (mic) askAnswer((typed, more) => {
+    if (G.phase !== "answering" || G.buzzer !== p) return;
+    const r = judgeAll([typed, ...(more || [])], G.item);
+    reveal();
+    if (r.ok === true) return score(true);
+    if (r.text) $("acts").insertAdjacentHTML("afterbegin", `<span style="flex-basis:100%">🎤 שמעתי: "${escapeHtml(r.text)}"</span>`);
+  }, G.item, { micOnly: true });
 }
 
 function reveal(timeUp) {
   if (G.phase !== "open" && G.phase !== "answering") return;
   stopAnswerTimer();
+  if (G.mode === "duo") { stopListening(); onAnswer = null; }
   revealFx();
   const a = document.createElement("div");
   a.className = "answer";
@@ -1084,9 +1147,9 @@ $("jSaid").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preve
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null, onAnswer = null, heard = [], liveItem = null, listenWanted = false, listenRestarts = 0;
 // item: אם נותנים — ברגע שהמיקרופון שומע את התשובה הנכונה, שולחים לבד (בלי ללחוץ "שלח")
-function askAnswer(cb, item) {
+function askAnswer(cb, item, opts) {
   onAnswer = cb; heard = []; liveItem = item || null; listenRestarts = 0;
-  $("ansIn").value = ""; $("ansBox").hidden = false;
+  $("ansIn").value = ""; $("ansBox").hidden = !!(opts && opts.micOnly);
   const canMic = SR && IS_APP; // בקישור של Claude אין גישה למיקרופון
   $("micBtn").hidden = !canMic;
   if (canMic) { listenWanted = true; startListening(); } else setTimeout(() => $("ansIn").focus(), 50);
@@ -1236,9 +1299,10 @@ function loadMqtt() {
     s.onload = ok; s.onerror = () => bad(new Error("no internet")); document.head.append(s);
   });
 }
-function netConnect(i) {
+function netConnect(i, topic) {
   return new Promise((ok, bad) => {
-    const c = window.mqtt.connect(BROKERS[i], { connectTimeout: 7000, reconnectPeriod: 2000, clean: true });
+    const c = window.mqtt.connect(BROKERS[i], { connectTimeout: 7000, reconnectPeriod: 2000, clean: true, keepalive: 15,
+      will: topic ? { topic, payload: JSON.stringify({ type: "bye", from: NET.me, name: prof.name }), qos: 1 } : undefined });
     const t = setTimeout(() => { c.end(true); bad(new Error("timeout")); }, 8000);
     c.on("connect", () => { clearTimeout(t); ok(c); });
     c.on("error", () => {});
@@ -1246,8 +1310,8 @@ function netConnect(i) {
 }
 async function netOpen(code, brokerIdx) {
   await loadMqtt();
-  NET.client = await netConnect(brokerIdx);
   NET.code = code; NET.topic = "hazira-dg/v1/" + code;
+  NET.client = await netConnect(brokerIdx, NET.topic);
   NET.client.subscribe(NET.topic, { qos: 1 });
   NET.client.on("message", (topic, payload) => {
     let m; try { m = JSON.parse(payload.toString()); } catch (e) { return; }
@@ -1256,7 +1320,18 @@ async function netOpen(code, brokerIdx) {
   });
 }
 function send(type, data) { if (NET.client) NET.client.publish(NET.topic, JSON.stringify({ type, from: NET.me, ...data }), { qos: 1 }); }
-function netLeave() { try { send("bye", {}); NET.client && NET.client.end(true); } catch (e) {} NET.client = null; NET.role = null; clearTimers(); }
+function netLeave() { try { send("bye", { name: prof.name }); NET.client && NET.client.end(true); } catch (e) {} NET.client = null; NET.role = null; clearTimers(); }
+// השחקן השני יצא: יוצאים גם מהמשחק וחוזרים למסך הבית עם הודעה
+function otherLeft(name) {
+  const inGame = !$("game").hidden || !$("over").hidden;
+  clearTimers(); stopAnswerTimer(); stopListening(); onAnswer = null; G.phase = "idle";
+  try { NET.client && NET.client.end(true); } catch (e) {} NET.client = null; NET.role = null;
+  show("home");
+  if (!inGame) return;
+  $("leftT").textContent = "👋 השחקן " + (name || O.themName || "השני") + " יצא מהמשחק";
+  $("leftMsg").hidden = false;
+}
+$("leftOk").onclick = () => { $("leftMsg").hidden = true; };
 
 async function hostRoom(c) {
   $("loadMsg").textContent = "יוצר חדר…"; show("loading");
@@ -1501,7 +1576,7 @@ function onlineOver(w) {
   show("over"); if (iWon) { sfx.win(); confetti(myColor()); }
 }
 function onNet(m) {
-  if (m.type === "bye") { if (NET.role && !$("game").hidden) { clearTimers(); acts("החבר יצא מהמשחק 👋"); } return; }
+  if (m.type === "bye") { if (NET.role && (!$("game").hidden || !$("over").hidden)) otherLeft(m.name); return; }
   if (NET.role === "host") {
     if (m.type === "join" && !O.joined) { O.joined = true; O.themName = m.name || ""; hostStart(); }
     else if (m.type === "buzz") hostGotBuzz("guest", m.rt, m.n);
@@ -1524,7 +1599,11 @@ function onNet(m) {
 
 // ---------- פתיחה: הצ'יטה מהלוגו (תמונה אמיתית, עם הברקים) רצה ~2.5 שניות, נכנסת ללוגו, ואז השם והמילים ----------
 const INTRO = { timers: [] };
+// הנקודות על "הצ'יטה" ממשיכות מאות לאות (כל אות מקבלת את החלק שלה מהדוגמה)
+function alignSpots() { $("ttl").querySelectorAll("span").forEach((s) => { s.style.setProperty("--ox", -s.offsetLeft + "px"); s.style.setProperty("--oy", -s.offsetTop + "px"); }); }
+addEventListener("resize", alignSpots);
 function playIntro() {
+  alignSpots();
   const hero = $("hero"), shot = $("shot"), img = shot.querySelector("img"), zap = $("zap"), badge = $("badge");
   INTRO.timers.forEach(clearTimeout); INTRO.timers = [];
   hero.querySelectorAll("*").forEach((el) => el.getAnimations().forEach((a) => a.cancel()));
@@ -1578,7 +1657,7 @@ try { prof = JSON.parse(localStorage.getItem(PROF_KEY) || "null"); } catch (e) {
 if (!prof || !prof.id) prof = { id: Math.random().toString(36).slice(2, 10), name: "", av: 0, photo: null, points: 0, pv: 2 };
 // פעם אחת: מאפסים את הנקודות מהגרסה שבה תשובה נכונה הייתה 10 נקודות
 if (prof.pv !== 2) { prof.points = 0; prof.pv = 2; try { localStorage.setItem(PROF_KEY, JSON.stringify(prof)); } catch (e) {} }
-const saveProf = () => { try { localStorage.setItem(PROF_KEY, JSON.stringify(prof)); } catch (e) {} };
+const saveProf = () => { try { localStorage.setItem(PROF_KEY, JSON.stringify(prof)); } catch (e) {} if (window.acctSoon) acctSoon(); };
 function levelInfo(points) {
   let lvl = 1, left = points, need = 100;
   while (left >= need) { left -= need; lvl++; need = 100 * lvl; }
@@ -1614,7 +1693,7 @@ function paintProfPage() {
   $("profLvl").textContent = "דרגה " + L.lvl + " · " + prof.points + " נקודות ⭐";
   $("profBar").style.width = Math.round(L.pct * 100) + "%";
   $("profNext").textContent = "עוד " + (L.need - L.have) + " נקודות לדרגה " + (L.lvl + 1) + " (כל תשובה נכונה = " + POINTS_PER_CORRECT + ")";
-  fillAvGrid($("avGrid"), (k) => { prof.av = k; prof.photo = null; saveProf(); paintProf(); presenceSay(); });
+  fillAvGrid($("avGrid"), (k) => { prof.av = k; prof.photo = null; saveProf(); paintProf(); presenceSay(); photoSay(); });
 }
 function fillAvGrid(grid, pick) {
   grid.innerHTML = "";
@@ -1650,28 +1729,125 @@ $("profFile").addEventListener("change", () => {
     const s = 256, cv = document.createElement("canvas"); cv.width = cv.height = s;
     const k = Math.max(s / img.width, s / img.height), w = img.width * k, h = img.height * k;
     cv.getContext("2d").drawImage(img, (s - w) / 2, (s - h) / 2, w, h);
-    prof.photo = cv.toDataURL("image/jpeg", 0.82); saveProf(); paintProf(); URL.revokeObjectURL(img.src);
+    prof.photo = cv.toDataURL("image/jpeg", 0.82); saveProf(); paintProf(); photoSay(); URL.revokeObjectURL(img.src);
   };
   img.src = URL.createObjectURL(f); $("profFile").value = "";
 });
-// כניסה ראשונה: בוחרים שם ותמונה
-function askName(msg) {
-  $("welcome").hidden = false;
-  $("wErr").hidden = !msg; if (msg) $("wErr").textContent = msg;
-  fillAvGrid($("wGrid"), (k) => { prof.av = k; });
-  setTimeout(() => $("wName").focus(), 50);
+// ---------- חשבון: שם משתמש + סיסמה ----------
+// החשבון (שם, תמונה, נקודות) נשמר ברשת, כדי שאפשר יהיה להיכנס אליו מכל טלפון.
+// הסיסמה לא נשמרת בכלל — רק "טביעת אצבע" מוצפנת שלה (PBKDF2 עם מלח).
+const b64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf)));
+async function hashPass(pass, salt) {
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: new TextEncoder().encode(salt), iterations: 150000 }, key, 256);
+  return b64(bits);
 }
-$("wGo").onclick = async () => {
-  const v = $("wName").value.trim();
-  if (!v) { $("wErr").textContent = "צריך לכתוב שם 🙂"; $("wErr").hidden = false; return; }
+const newSalt = () => b64(crypto.getRandomValues(new Uint8Array(16)));
+const W = { mode: "new" };
+function askName(msg, mode) {
+  W.mode = mode || (prof.name && IS_APP ? "setpass" : "new");
+  $("welcome").hidden = false;
+  paintWelcome();
+  $("wErr").hidden = !msg; if (msg) $("wErr").textContent = msg;
+  setTimeout(() => (W.mode === "setpass" ? $("wPass") : $("wName")).focus(), 50);
+}
+function paintWelcome() {
+  const m = W.mode;
+  $("wTabs").hidden = m === "setpass" || !IS_APP;
+  $("wTabNew").setAttribute("aria-pressed", String(m === "new")); $("wTabLogin").setAttribute("aria-pressed", String(m === "login"));
+  $("wH").textContent = m === "login" ? "🔑 כניסה לחשבון" : m === "setpass" ? "🔒 בחר סיסמה לחשבון" : "🐆 ברוך הבא לצ'יטה!";
+  $("wNote").textContent = m === "login" ? "כתוב את שם המשתמש והסיסמה שלך." : m === "setpass"
+    ? "עכשיו יש סיסמאות! בחר סיסמה, וככה תוכל להיכנס לחשבון שלך (עם הנקודות והדרגה) גם מטלפון אחר."
+    : "איך אתה רוצה שיקראו לך? זה השם שחברים יראו באונליין.";
+  $("wName").readOnly = m === "setpass"; if (m === "setpass") $("wName").value = prof.name;
+  $("wPass").hidden = $("wSafe").hidden = !IS_APP;
+  $("wPass").autocomplete = m === "login" ? "current-password" : "new-password";
+  $("wAvBox").hidden = m !== "new";
+  $("wGo").textContent = m === "login" ? "כניסה" : m === "setpass" ? "שמור סיסמה" : "יאללה, מתחילים!";
+  $("wCancel").hidden = !W.canCancel;
+  if (m === "new") fillAvGrid($("wGrid"), (k) => { prof.av = k; });
+}
+$("wTabNew").onclick = () => { W.mode = "new"; $("wErr").hidden = true; paintWelcome(); };
+$("wTabLogin").onclick = () => { W.mode = "login"; $("wErr").hidden = true; paintWelcome(); };
+$("wCancel").onclick = () => { $("welcome").hidden = true; W.canCancel = false; };
+const wFail = (t) => { $("wErr").textContent = t; $("wErr").hidden = false; $("wGo").disabled = false; paintWelcome(); };
+// שומר את הסיסמה במנהל הסיסמאות של גוגל (אם הטלפון מאפשר)
+function storeCred(name, pass) { try { if (window.PasswordCredential && navigator.credentials) navigator.credentials.store(new PasswordCredential({ id: name, password: pass, name })).catch(() => {}); } catch (e) {} }
+$("wForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const name = $("wName").value.trim(), pass = $("wPass").value;
+  $("wErr").hidden = true;
+  if (!name) return wFail("צריך לכתוב שם משתמש 🙂");
+  if (IS_APP && pass.length < 4) return wFail("הסיסמה צריכה להיות לפחות 4 אותיות או מספרים.");
   $("wGo").disabled = true; $("wGo").textContent = "בודק…";
-  const owner = await nameOwner(v);
-  $("wGo").disabled = false; $("wGo").textContent = "יאללה, מתחילים!";
-  if (owner && owner !== prof.id) { $("wErr").textContent = "שם המשתמש \"" + v + "\" כבר קיים 🙁 בחר שם אחר."; $("wErr").hidden = false; return; }
-  claimName(v, prof.name);
-  prof.name = v; saveProf(); $("welcome").hidden = true; paintProf(); presenceSay();
-};
-$("wName").addEventListener("keydown", (e) => { if (e.key === "Enter") $("wGo").click(); });
+  if (W.mode === "login") {
+    const c = await presenceConnect(); if (!c) return wFail("אין חיבור לאינטרנט. נסה שוב.");
+    const rec = await getRetained("acct/" + nameKey(name));
+    if (!rec || !rec.hash) return wFail("לא מצאתי משתמש בשם \"" + name + "\".");
+    if ((await hashPass(pass, rec.salt)) !== rec.hash) return wFail("הסיסמה לא נכונה 🙁");
+    presenceGone();
+    prof = { id: rec.id, name: rec.name, av: rec.av | 0, photo: rec.photo || null, points: rec.points | 0, pv: 2, salt: rec.salt, hash: rec.hash, t: rec.t || 0 };
+    try { localStorage.setItem(PROF_KEY, JSON.stringify(prof)); } catch (x) {}
+    storeCred(name, pass);
+    location.reload(); // נכנסים מחדש עם החשבון
+    return;
+  }
+  if (W.mode === "new") {
+    const owner = await nameOwner(name);
+    const rec = IS_APP ? await getRetained("acct/" + nameKey(name)) : null;
+    if ((owner && owner !== prof.id) || (rec && rec.id !== prof.id)) return wFail("שם המשתמש \"" + name + "\" כבר קיים 🙁 בחר שם אחר, או לחץ \"יש לי כבר חשבון\".");
+    claimName(name, prof.name);
+    prof.name = name;
+  }
+  if (IS_APP) { prof.salt = newSalt(); prof.hash = await hashPass(pass, prof.salt); storeCred(prof.name, pass); }
+  saveProf(); acctPut();
+  $("welcome").hidden = true; W.canCancel = false; $("wGo").disabled = false; $("wPass").value = "";
+  paintProf(); presenceSay();
+});
+// ---------- החשבון ברשת ----------
+function acctPut() {
+  if (!IS_APP || !prof.hash || !prof.name || !PRES.client || !PRES.client.connected) return;
+  prof.t = Date.now(); try { localStorage.setItem(PROF_KEY, JSON.stringify(prof)); } catch (e) {}
+  PRES.client.publish(PRES_ROOT + "acct/" + nameKey(prof.name), JSON.stringify({ v: 1, id: prof.id, name: prof.name, av: prof.av, points: prof.points, pv: 2, photo: myThumb || null, salt: prof.salt, hash: prof.hash, t: prof.t }), { retain: true, qos: 1 });
+}
+let acctTimer = 0;
+function acctSoon() { clearTimeout(acctTimer); acctTimer = setTimeout(acctPut, 1500); }
+// אחרי חיבור: מסנכרנים עם החשבון ברשת (נקודות = הגבוה מבין שני הטלפונים)
+async function acctSync() {
+  if (!IS_APP || !prof.name) return;
+  if (!prof.hash) { if ($("welcome").hidden) askName("", "setpass"); return; }
+  const rec = await getRetained("acct/" + nameKey(prof.name));
+  if (rec && rec.id === prof.id && rec.hash !== prof.hash) { W.canCancel = false; $("wName").value = prof.name; askName("הסיסמה של החשבון שונתה בטלפון אחר. תיכנס שוב עם הסיסמה החדשה.", "login"); return; }
+  if (rec && rec.id === prof.id) {
+    prof.points = Math.max(prof.points | 0, rec.points | 0);
+    if ((rec.t || 0) > (prof.t || 0)) prof.av = rec.av | 0;
+    try { localStorage.setItem(PROF_KEY, JSON.stringify(prof)); } catch (e) {}
+    paintProf();
+  }
+  acctPut();
+}
+// ---------- הגדרות ----------
+$("gearBtn").onclick = (e) => { e.stopPropagation(); show("settings"); paintSettings(); };
+$("setBack").onclick = () => show("home");
+function paintSettings() {
+  $("setWho").textContent = "מחובר כ: " + (prof.name || "—");
+  $("setAcct").textContent = IS_APP ? (prof.hash ? "החשבון שמור. אפשר להיכנס אליו מכל טלפון עם השם והסיסמה." : "לחשבון עוד אין סיסמה.") : "חשבונות וסיסמאות עובדים רק באפליקציה.";
+  $("setLogin").hidden = !IS_APP; $("passForm").parentElement.hidden = !IS_APP;
+  $("passUser").value = prof.name; $("passMsg").hidden = true;
+}
+$("setLogin").onclick = () => { W.canCancel = true; $("wName").value = ""; $("wPass").value = ""; show("home"); askName("", "login"); };
+$("passForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const p = $("newPass").value, msg = $("passMsg");
+  msg.hidden = false;
+  if (p.length < 4) { msg.textContent = "הסיסמה צריכה להיות לפחות 4 אותיות או מספרים."; return; }
+  const c = await presenceConnect(); if (!c) { msg.textContent = "אין חיבור לאינטרנט. נסה שוב."; return; }
+  prof.salt = newSalt(); prof.hash = await hashPass(p, prof.salt); saveProf(); acctPut(); storeCred(prof.name, p);
+  $("newPass").value = ""; msg.textContent = "✓ הסיסמה נשמרה!";
+});
+paintProf();
+if (!prof.name) askName("", "new");
+
 $("profName").addEventListener("change", async () => {
   const v = $("profName").value.trim(), old = prof.name;
   $("profNameErr").hidden = true;
@@ -1679,6 +1855,7 @@ $("profName").addEventListener("change", async () => {
   const owner = await nameOwner(v);
   if (owner && owner !== prof.id) { $("profName").value = old; $("profNameErr").textContent = "שם המשתמש \"" + v + "\" כבר קיים 🙁 בחר שם אחר."; $("profNameErr").hidden = false; return; }
   claimName(v, old);
+  if (prof.hash && PRES.client && PRES.client.connected) PRES.client.publish(PRES_ROOT + "acct/" + nameKey(old), "", { retain: true, qos: 1 });
   prof.name = v; saveProf(); paintProf(); presenceSay();
 });
 paintProf();
@@ -1686,7 +1863,20 @@ if (!prof.name) askName();
 
 // ---------- מי מחובר עכשיו + הזמנות (רק באפליקציה) ----------
 // כל אחד מפרסם "אני כאן" (שם, תמונה מוכנה, דרגה, אם הוא באמצע משחק). הזמנה נשלחת לתיבה של החבר.
-const PRES = { client: null, list: {}, pending: [], invited: {}, timer: null, ready: null };
+const PRES = { client: null, list: {}, pending: [], invited: {}, timer: null, ready: null, photos: {} };
+// תמונה מהגלריה: שולחים גרסה קטנה (96 פיקסלים) כדי שגם אחרים יראו אותה
+let myThumb = null;
+function makeThumb(done) {
+  if (!prof.photo) { myThumb = null; return done(); }
+  const img = new Image();
+  img.onload = () => { const cv = document.createElement("canvas"); cv.width = cv.height = 96; cv.getContext("2d").drawImage(img, 0, 0, 96, 96); myThumb = cv.toDataURL("image/jpeg", 0.7); done(); };
+  img.onerror = () => { myThumb = null; done(); };
+  img.src = prof.photo;
+}
+function photoSay() {
+  makeThumb(() => { if (PRES.client && PRES.client.connected) PRES.client.publish(PRES_ROOT + "photo/" + prof.id, myThumb || "", { retain: true, qos: 1 }); acctSoon(); });
+}
+const photoOf = (id) => (id === prof.id ? prof.photo : PRES.photos[id]) || null;
 const PRES_ROOT = "hazira-dg/v1/";
 const ST_NAME = { home: "במסך הבית", lobby: "בחדר, מחכה לחבר", playing: "באמצע משחק" };
 const myStatus = () => (!$("game").hidden ? "playing" : !$("lobby").hidden ? "lobby" : "home");
@@ -1694,7 +1884,7 @@ function presenceSay() {
   if (!PRES.client || !PRES.client.connected || !prof.name) return;
   // יצא מהאפליקציה / עבר לאפליקציה אחרת / כיבה מסך — יורד מהרשימה
   if (document.hidden) return presenceGone();
-  PRES.client.publish(PRES_ROOT + "presence/" + prof.id, JSON.stringify({ id: prof.id, name: prof.name, av: prof.av, lvl: levelInfo(prof.points).lvl, st: myStatus(), t: Date.now() }), { retain: true, qos: 1 });
+  PRES.client.publish(PRES_ROOT + "presence/" + prof.id, JSON.stringify({ id: prof.id, name: prof.name, av: prof.av, lvl: levelInfo(prof.points).lvl, st: myStatus(), pts: prof.points, t: Date.now() }), { retain: true, qos: 1 });
 }
 function presenceGone() { if (PRES.client && PRES.client.connected) PRES.client.publish(PRES_ROOT + "presence/" + prof.id, "", { retain: true, qos: 1 }); }
 document.addEventListener("visibilitychange", () => { if (document.hidden) presenceGone(); else presenceSay(); });
@@ -1702,22 +1892,23 @@ addEventListener("pagehide", presenceGone);
 
 // שמות משתמש: כל שם שמור אצל מי שלקח אותו ראשון. אי אפשר שיהיו שני "דניאל"
 const nameKey = (n) => encodeURIComponent(String(n).trim().toLowerCase().replace(/[ךםןףץ]/g, (c) => ({ "ך": "כ", "ם": "מ", "ן": "נ", "ף": "פ", "ץ": "צ" }[c])).replace(/[\s"'׳״.\-_]+/g, ""));
-async function nameOwner(name) {
+async function getRetained(sub) {
   const c = await presenceConnect(); if (!c) return null; // בלי אינטרנט — לא בודקים
-  const topic = PRES_ROOT + "names/" + nameKey(name);
+  const topic = PRES_ROOT + sub;
   return new Promise((done) => {
     let finished = false;
-    const onMsg = (t, p) => { if (t !== topic) return; finish(p.toString()); };
+    const onMsg = (t, p) => { if (t === topic) finish(p.toString()); };
     const finish = (s) => {
       if (finished) return; finished = true;
       c.removeListener("message", onMsg); c.unsubscribe(topic);
       let m = null; try { m = s ? JSON.parse(s) : null; } catch (e) {}
-      done(m && m.id ? m.id : null);
+      done(m);
     };
     c.on("message", onMsg); c.subscribe(topic, { qos: 1 });
     setTimeout(() => finish(""), 1800);
   });
 }
+async function nameOwner(name) { const m = await getRetained("names/" + nameKey(name)); return m && m.id ? m.id : null; }
 function claimName(name, old) {
   if (!PRES.client || !PRES.client.connected) return;
   if (old && nameKey(old) !== nameKey(name)) PRES.client.publish(PRES_ROOT + "names/" + nameKey(old), "", { retain: true, qos: 1 });
@@ -1733,11 +1924,13 @@ function presenceConnect() {
       will: { topic: PRES_ROOT + "presence/" + prof.id, payload: "", retain: true, qos: 1 } });
     PRES.client = c;
     c.on("error", () => {});
-    c.on("connect", () => { c.subscribe([PRES_ROOT + "presence/+", PRES_ROOT + "inbox/" + prof.id], { qos: 1 }); presenceSay(); });
+    c.on("connect", () => { c.subscribe([PRES_ROOT + "presence/+", PRES_ROOT + "photo/+", PRES_ROOT + "inbox/" + prof.id], { qos: 1 }); presenceSay(); photoSay(); });
     c.on("message", onPresenceMsg);
     clearInterval(PRES.timer);
+    let beat = 0;
     PRES.timer = setInterval(() => {
       presenceSay();
+      if (++beat % 3 === 0 && prof.photo && !document.hidden) photoSay(); // שולחים שוב את התמונה כל דקה, למקרה שהיא הלכה לאיבוד בדרך
       for (const [id, p] of Object.entries(PRES.list)) if (Date.now() - p.seen > 70000) delete PRES.list[id];
       paintOnlineList();
     }, 20000);
@@ -1749,12 +1942,18 @@ async function presenceStart() {
   const c = await presenceConnect(); if (!c || !prof.name) return;
   // שם ישן מלפני שהיו שמות ייחודיים: אם מישהו אחר כבר לקח אותו — בוחרים שם חדש
   const owner = await nameOwner(prof.name);
-  if (owner && owner !== prof.id) { const old = prof.name; prof.name = ""; saveProf(); $("wName").value = ""; askName("השם \"" + old + "\" כבר תפוס אצל מישהו אחר 🙁 בחר שם חדש."); return; }
+  if (owner && owner !== prof.id) { const old = prof.name; prof.name = ""; saveProf(); $("wName").value = ""; askName("השם \"" + old + "\" כבר תפוס אצל מישהו אחר 🙁 בחר שם חדש.", "new"); return; }
   if (!owner) claimName(prof.name);
   presenceSay();
+  acctSync();
 }
 function onPresenceMsg(topic, payload) {
   const s = payload.toString();
+  if (topic.startsWith(PRES_ROOT + "photo/")) {
+    const id = topic.split("/").pop();
+    if (id !== prof.id) { if (s.startsWith("data:image/")) PRES.photos[id] = s; else delete PRES.photos[id]; paintOnlineList(); }
+    return;
+  }
   if (topic.startsWith(PRES_ROOT + "presence/")) {
     const id = topic.split("/").pop();
     if (id === prof.id) return;
@@ -1768,43 +1967,69 @@ function onPresenceMsg(topic, payload) {
   if (m.type === "invite") { PRES.pending = PRES.pending.filter((x) => x.from.id !== m.from.id).concat(m); nextInvite(); }
   else if (m.type === "decline" && !$("lobby").hidden) { $("inviteNote").textContent = m.name + ": לא עכשיו 🙁"; $("inviteNote").hidden = false; }
 }
+const stText = (p) => (p.st === "playing" ? "🎮 " : p.st === "lobby" ? "⏳ " : "🏠 ") + (ST_NAME[p.st] || ST_NAME.home);
+const qNorm = (s) => String(s || "").toLowerCase().replace(/[\s"'׳״.\-_]+/g, "");
+function sendInvite(p) {
+  PRES.client.publish(PRES_ROOT + "inbox/" + p.id, JSON.stringify({ type: "invite", from: { id: prof.id, name: prof.name, av: prof.av, lvl: levelInfo(prof.points).lvl }, code: NET.code, what: $("lobbyTitle").textContent, t: Date.now() }), { qos: 1 });
+  PRES.invited[p.id] = true;
+  $("inviteNote").textContent = p.st === "playing" ? p.name + " באמצע משחק. ההזמנה תחכה עד שהמשחק ייגמר." : p.st === "lobby" ? p.name + " בחדר אחר עכשיו. ההזמנה תחכה עד שיחזור למסך הבית." : "ההזמנה נשלחה ל" + p.name + "!";
+  $("inviteNote").hidden = false;
+  paintOnlineList();
+}
+function playerRow(p, size, withInvite) {
+  const row = document.createElement("div"); row.className = "pitem";
+  row.append(avEl(p.av, size, photoOf(p.id)));
+  const t = document.createElement("span"); t.className = "nm"; t.textContent = p.name + " ";
+  const st = document.createElement("span"); st.className = "st"; st.textContent = stText(p) + " · דרגה " + (p.lvl || 1);
+  t.append(document.createElement("br"), st); row.append(t);
+  row.onclick = () => openPlayer(p);
+  if (withInvite) {
+    const b = document.createElement("button"); b.textContent = PRES.invited[p.id] ? "הוזמן ✓" : "הזמן"; b.disabled = !!PRES.invited[p.id];
+    b.onclick = (e) => { e.stopPropagation(); sendInvite(p); };
+    row.append(b);
+  }
+  return row;
+}
 function paintOnlineList() {
-  const people = Object.values(PRES.list).sort((a, b) => (a.st === "playing") - (b.st === "playing") || a.name.localeCompare(b.name, "he"));
+  const all = Object.values(PRES.list).sort((a, b) => (a.st === "playing") - (b.st === "playing") || a.name.localeCompare(b.name, "he"));
+  const filt = (q) => { const k = qNorm(q); return k ? all.filter((p) => qNorm(p.name).includes(k)) : all; };
   const hb = $("homeList");
   if (hb && !$("joinBox").hidden) {
-    hb.innerHTML = people.length ? "" : `<div class="note">אף אחד עוד לא מחובר עכשיו.</div>`;
-    for (const p of people) {
-      const row = document.createElement("div"); row.className = "pitem"; row.append(avEl(p.av, 34));
-      const t = document.createElement("span"); t.className = "nm"; t.textContent = p.name + " ";
-      const st = document.createElement("span"); st.className = "st"; st.textContent = (p.st === "playing" ? "🎮 " : p.st === "lobby" ? "⏳ " : "🏠 ") + (ST_NAME[p.st] || ST_NAME.home) + " · דרגה " + (p.lvl || 1);
-      t.append(document.createElement("br"), st); row.append(t); hb.append(row);
-    }
+    const people = filt($("homeSearch").value);
+    hb.innerHTML = people.length ? "" : `<div class="note">${all.length ? "לא מצאתי שחקן בשם הזה." : "אף אחד עוד לא מחובר עכשיו."}</div>`;
+    for (const p of people) hb.append(playerRow(p, 34, false));
   }
   const box = $("onlineList"); if (!box || $("lobby").hidden) return;
+  const people = filt($("lobbySearch").value);
   box.innerHTML = "";
-  if (!people.length) { box.innerHTML = `<div class="note" style="text-align:center">אין עכשיו עוד מישהו מחובר. שלח לחבר את הקוד 👆</div>`; return; }
-  for (const p of people) {
-    const row = document.createElement("div"); row.className = "pitem";
-    row.append(avEl(p.av, 40));
-    const t = document.createElement("span"); t.className = "nm"; t.textContent = p.name + " ";
-    const st = document.createElement("span"); st.className = "st"; st.textContent = (p.st === "playing" ? "🎮 " : p.st === "lobby" ? "⏳ " : "🏠 ") + (ST_NAME[p.st] || ST_NAME.home) + " · דרגה " + (p.lvl || 1);
-    t.append(document.createElement("br"), st); row.append(t);
-    const b = document.createElement("button"); b.textContent = PRES.invited[p.id] ? "הוזמן ✓" : "הזמן"; b.disabled = !!PRES.invited[p.id];
-    b.onclick = () => {
-      PRES.client.publish(PRES_ROOT + "inbox/" + p.id, JSON.stringify({ type: "invite", from: { id: prof.id, name: prof.name, av: prof.av, lvl: levelInfo(prof.points).lvl }, code: NET.code, what: $("lobbyTitle").textContent, t: Date.now() }), { qos: 1 });
-      PRES.invited[p.id] = true; b.textContent = "הוזמן ✓"; b.disabled = true;
-      $("inviteNote").textContent = p.st === "playing" ? p.name + " באמצע משחק. ההזמנה תחכה עד שהמשחק ייגמר." : p.st === "lobby" ? p.name + " בחדר אחר עכשיו. ההזמנה תחכה עד שיחזור למסך הבית." : "ההזמנה נשלחה ל" + p.name + "!";
-      $("inviteNote").hidden = false;
-    };
-    row.append(b); box.append(row);
-  }
+  if (!people.length) { box.innerHTML = `<div class="note" style="text-align:center">${all.length ? "לא מצאתי שחקן בשם הזה." : "אין עכשיו עוד מישהו מחובר. שלח לחבר את הקוד 👆"}</div>`; return; }
+  for (const p of people) box.append(playerRow(p, 40, true));
 }
+$("homeSearch").addEventListener("input", paintOnlineList);
+$("lobbySearch").addEventListener("input", paintOnlineList);
+// לוחצים על שחקן — רואים את הפרופיל שלו: תמונה, דרגה, נקודות ואיפה הוא עכשיו
+function openPlayer(p) {
+  const pts = p.pts | 0, L = levelInfo(pts), host = $("pvAv"), size = 96, r = size / 2 + 5, C = 2 * Math.PI * (r - 3);
+  host.innerHTML = ""; host.style.width = host.style.height = size + 12 + "px";
+  host.insertAdjacentHTML("beforeend", `<svg viewBox="0 0 ${2 * r + 2} ${2 * r + 2}" width="${size + 12}" height="${size + 12}"><circle class="track" cx="${r + 1}" cy="${r + 1}" r="${r - 3}" fill="none" stroke-width="5"/><circle class="prog" cx="${r + 1}" cy="${r + 1}" r="${r - 3}" fill="none" stroke-width="5" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - L.pct)}"/></svg>`);
+  host.append(avEl(p.av, size, photoOf(p.id)));
+  const b = document.createElement("span"); b.className = "lvl"; b.textContent = L.lvl; host.append(b);
+  $("pvName").textContent = p.name;
+  $("pvLvl").textContent = "דרגה " + L.lvl + " · " + pts + " נקודות ⭐";
+  $("pvBar").style.width = Math.round(L.pct * 100) + "%";
+  $("pvSt").textContent = stText(p);
+  const canInvite = !$("lobby").hidden && NET.code && !PRES.invited[p.id];
+  $("pvInvite").hidden = !canInvite;
+  $("pvInvite").onclick = () => { sendInvite(p); $("pview").hidden = true; };
+  $("pview").hidden = false;
+}
+$("pvClose").onclick = () => { $("pview").hidden = true; };
 // הזמנה מחכה עד שחוזרים למסך הבית (כמו בבראול סטארס)
 function nextInvite() {
   if (!PRES.pending.length || ($("home").hidden && $("over").hidden) || !$("invite").hidden || !$("welcome").hidden || document.hidden) return;
   const m = PRES.pending.shift();
   if (Date.now() - (m.t || 0) > 10 * 60000) return nextInvite();
-  const a = $("invAv"); a.innerHTML = ""; a.append(avEl(m.from.av, 72));
+  const a = $("invAv"); a.innerHTML = ""; a.append(avEl(m.from.av, 72, photoOf(m.from.id)));
   $("invH").textContent = "הזמנה מ" + m.from.name + "! 🎮";
   $("invWhat").textContent = m.what || "";
   $("invite").hidden = false;
