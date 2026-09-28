@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/favicon-cheetah3.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon-cheetah3.png">
-<script>window.HAZIRA_IS_APP = true; window.HAZIRA_VERSION = "1790581857679";</script>
+<script>window.HAZIRA_IS_APP = true; window.HAZIRA_VERSION = "1790582584458";</script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
 <body>
@@ -303,6 +303,8 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
     <div class="row"><input id="joinCode" inputmode="numeric" maxlength="5" placeholder="12345" autocomplete="off"><button class="go" id="joinGo">הצטרף</button></div>
     <span class="note">או בחר קטגוריה למטה כדי <b>ליצור חדר</b> ולשלוח קוד לחבר.</span>
     <div class="err" id="joinErr" hidden></div>
+    <b>🟢 מחוברים עכשיו:</b>
+    <div class="plist" id="homeList" style="width:100%"></div>
   </div>
 
   <div class="row">
@@ -345,6 +347,7 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
 <section id="profile" class="screen" hidden>
   <div class="row" style="justify-content:space-between"><h2>הפרופיל שלי</h2><button class="ghost" id="profBack">חזרה ←</button></div>
   <div class="profhead"><span class="ringwrap" id="profBig"></span><input id="profName" maxlength="14" autocomplete="off" aria-label="שם משתמש"></div>
+  <div class="err" id="profNameErr" hidden></div>
   <div class="lvlbar"><b id="profLvl"></b><div class="bar"><i id="profBar"></i></div><span class="note" id="profNext"></span></div>
   <h2 style="font-size:20px">בחר תמונה</h2>
   <div class="row"><button class="go" id="profPhoto">🖼️ תמונה מהגלריה</button><input type="file" id="profFile" accept="image/*" hidden></div>
@@ -449,7 +452,7 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
 
 <script>
 const $ = (id) => document.getElementById(id);
-const show = (id) => { for (const s of ["home", "loading", "lobby", "game", "over", "profile"]) $(s).hidden = s !== id; if (id === "home" && window.nextInvite) setTimeout(nextInvite, 400); };
+const show = (id) => { for (const s of ["home", "loading", "lobby", "game", "over", "profile"]) $(s).hidden = s !== id; if ((id === "home" || id === "over") && window.nextInvite) setTimeout(nextInvite, 400); };
 
 // ---------- צלילים ----------
 let ac;
@@ -1639,7 +1642,6 @@ function awardPoints(n) {
 $("lvlUpOk").onclick = () => { $("lvlUp").hidden = true; };
 $("profBtn").onclick = () => { show("profile"); paintProfPage(); };
 $("profBack").onclick = () => { show("home"); };
-$("profName").addEventListener("change", () => { const v = $("profName").value.trim(); if (v) { prof.name = v; saveProf(); presenceSay(); } else $("profName").value = prof.name; });
 $("profPhoto").onclick = () => $("profFile").click();
 $("profFile").addEventListener("change", () => {
   const f = $("profFile").files && $("profFile").files[0]; if (!f) return;
@@ -1653,73 +1655,145 @@ $("profFile").addEventListener("change", () => {
   img.src = URL.createObjectURL(f); $("profFile").value = "";
 });
 // כניסה ראשונה: בוחרים שם ותמונה
-function askName() {
+function askName(msg) {
   $("welcome").hidden = false;
+  $("wErr").hidden = !msg; if (msg) $("wErr").textContent = msg;
   fillAvGrid($("wGrid"), (k) => { prof.av = k; });
   setTimeout(() => $("wName").focus(), 50);
 }
-$("wGo").onclick = () => {
+$("wGo").onclick = async () => {
   const v = $("wName").value.trim();
-  if (!v) { $("wErr").hidden = false; return; }
-  prof.name = v; saveProf(); $("welcome").hidden = true; paintProf(); presenceStart();
+  if (!v) { $("wErr").textContent = "צריך לכתוב שם 🙂"; $("wErr").hidden = false; return; }
+  $("wGo").disabled = true; $("wGo").textContent = "בודק…";
+  const owner = await nameOwner(v);
+  $("wGo").disabled = false; $("wGo").textContent = "יאללה, מתחילים!";
+  if (owner && owner !== prof.id) { $("wErr").textContent = "שם המשתמש \"" + v + "\" כבר קיים 🙁 בחר שם אחר."; $("wErr").hidden = false; return; }
+  claimName(v, prof.name);
+  prof.name = v; saveProf(); $("welcome").hidden = true; paintProf(); presenceSay();
 };
 $("wName").addEventListener("keydown", (e) => { if (e.key === "Enter") $("wGo").click(); });
+$("profName").addEventListener("change", async () => {
+  const v = $("profName").value.trim(), old = prof.name;
+  $("profNameErr").hidden = true;
+  if (!v || v === old) { $("profName").value = old; return; }
+  const owner = await nameOwner(v);
+  if (owner && owner !== prof.id) { $("profName").value = old; $("profNameErr").textContent = "שם המשתמש \"" + v + "\" כבר קיים 🙁 בחר שם אחר."; $("profNameErr").hidden = false; return; }
+  claimName(v, old);
+  prof.name = v; saveProf(); paintProf(); presenceSay();
+});
 paintProf();
 if (!prof.name) askName();
 
 // ---------- מי מחובר עכשיו + הזמנות (רק באפליקציה) ----------
 // כל אחד מפרסם "אני כאן" (שם, תמונה מוכנה, דרגה, אם הוא באמצע משחק). הזמנה נשלחת לתיבה של החבר.
-const PRES = { client: null, list: {}, pending: [], invited: {}, timer: null };
+const PRES = { client: null, list: {}, pending: [], invited: {}, timer: null, ready: null };
 const PRES_ROOT = "hazira-dg/v1/";
-const myStatus = () => (!$("game").hidden || !$("over").hidden ? "playing" : !$("lobby").hidden ? "lobby" : "home");
+const ST_NAME = { home: "במסך הבית", lobby: "בחדר, מחכה לחבר", playing: "באמצע משחק" };
+const myStatus = () => (!$("game").hidden ? "playing" : !$("lobby").hidden ? "lobby" : "home");
 function presenceSay() {
   if (!PRES.client || !PRES.client.connected || !prof.name) return;
+  // יצא מהאפליקציה / עבר לאפליקציה אחרת / כיבה מסך — יורד מהרשימה
+  if (document.hidden) return presenceGone();
   PRES.client.publish(PRES_ROOT + "presence/" + prof.id, JSON.stringify({ id: prof.id, name: prof.name, av: prof.av, lvl: levelInfo(prof.points).lvl, st: myStatus(), t: Date.now() }), { retain: true, qos: 1 });
 }
-async function presenceStart() {
-  if (!IS_APP || !prof.name || PRES.client) return;
-  try { await loadMqtt(); } catch (e) { return; }
-  const c = window.mqtt.connect(BROKERS[0], { clientId: "hz_" + prof.id + "_" + Math.random().toString(36).slice(2, 6), reconnectPeriod: 4000, keepalive: 30,
-    will: { topic: PRES_ROOT + "presence/" + prof.id, payload: "", retain: true, qos: 1 } });
-  PRES.client = c;
-  c.on("connect", () => {
-    c.subscribe([PRES_ROOT + "presence/+", PRES_ROOT + "inbox/" + prof.id], { qos: 1 });
-    presenceSay();
-  });
-  c.on("error", () => {});
-  c.on("message", (topic, payload) => {
-    const s = payload.toString();
-    if (topic.startsWith(PRES_ROOT + "presence/")) {
-      const id = topic.split("/").pop();
-      if (id === prof.id) return;
+function presenceGone() { if (PRES.client && PRES.client.connected) PRES.client.publish(PRES_ROOT + "presence/" + prof.id, "", { retain: true, qos: 1 }); }
+document.addEventListener("visibilitychange", () => { if (document.hidden) presenceGone(); else presenceSay(); });
+addEventListener("pagehide", presenceGone);
+
+// שמות משתמש: כל שם שמור אצל מי שלקח אותו ראשון. אי אפשר שיהיו שני "דניאל"
+const nameKey = (n) => encodeURIComponent(String(n).trim().toLowerCase().replace(/[ךםןףץ]/g, (c) => ({ "ך": "כ", "ם": "מ", "ן": "נ", "ף": "פ", "ץ": "צ" }[c])).replace(/[\s"'׳״.\-_]+/g, ""));
+async function nameOwner(name) {
+  const c = await presenceConnect(); if (!c) return null; // בלי אינטרנט — לא בודקים
+  const topic = PRES_ROOT + "names/" + nameKey(name);
+  return new Promise((done) => {
+    let finished = false;
+    const onMsg = (t, p) => { if (t !== topic) return; finish(p.toString()); };
+    const finish = (s) => {
+      if (finished) return; finished = true;
+      c.removeListener("message", onMsg); c.unsubscribe(topic);
       let m = null; try { m = s ? JSON.parse(s) : null; } catch (e) {}
-      if (!m || Date.now() - (m.t || 0) > 5 * 60000) delete PRES.list[id]; else PRES.list[id] = { ...m, seen: Date.now() };
-      paintOnlineList();
-      return;
-    }
-    let m; try { m = JSON.parse(s); } catch (e) { return; }
-    if (m.type === "invite") { PRES.pending = PRES.pending.filter((x) => x.from.id !== m.from.id).concat(m); nextInvite(); }
-    else if (m.type === "decline" && !$("lobby").hidden) { $("inviteNote").textContent = m.name + ": לא עכשיו 🙁"; $("inviteNote").hidden = false; }
+      done(m && m.id ? m.id : null);
+    };
+    c.on("message", onMsg); c.subscribe(topic, { qos: 1 });
+    setTimeout(() => finish(""), 1800);
   });
-  clearInterval(PRES.timer);
-  PRES.timer = setInterval(() => { presenceSay(); for (const [id, p] of Object.entries(PRES.list)) if (Date.now() - p.seen > 3 * 60000) delete PRES.list[id]; paintOnlineList(); }, 60000);
+}
+function claimName(name, old) {
+  if (!PRES.client || !PRES.client.connected) return;
+  if (old && nameKey(old) !== nameKey(name)) PRES.client.publish(PRES_ROOT + "names/" + nameKey(old), "", { retain: true, qos: 1 });
+  PRES.client.publish(PRES_ROOT + "names/" + nameKey(name), JSON.stringify({ id: prof.id, name, t: Date.now() }), { retain: true, qos: 1 });
+}
+// מתחברים (גם לפני שיש שם, כדי לבדוק אם שם תפוס)
+function presenceConnect() {
+  if (!IS_APP) return Promise.resolve(null);
+  if (PRES.ready) return PRES.ready;
+  PRES.ready = (async () => {
+    try { await loadMqtt(); } catch (e) { PRES.ready = null; return null; }
+    const c = window.mqtt.connect(BROKERS[0], { clientId: "hz_" + prof.id + "_" + Math.random().toString(36).slice(2, 6), reconnectPeriod: 4000, keepalive: 20,
+      will: { topic: PRES_ROOT + "presence/" + prof.id, payload: "", retain: true, qos: 1 } });
+    PRES.client = c;
+    c.on("error", () => {});
+    c.on("connect", () => { c.subscribe([PRES_ROOT + "presence/+", PRES_ROOT + "inbox/" + prof.id], { qos: 1 }); presenceSay(); });
+    c.on("message", onPresenceMsg);
+    clearInterval(PRES.timer);
+    PRES.timer = setInterval(() => {
+      presenceSay();
+      for (const [id, p] of Object.entries(PRES.list)) if (Date.now() - p.seen > 70000) delete PRES.list[id];
+      paintOnlineList();
+    }, 20000);
+    return new Promise((ok) => { if (c.connected) ok(c); c.once("connect", () => ok(c)); setTimeout(() => ok(c.connected ? c : null), 8000); });
+  })();
+  return PRES.ready;
+}
+async function presenceStart() {
+  const c = await presenceConnect(); if (!c || !prof.name) return;
+  // שם ישן מלפני שהיו שמות ייחודיים: אם מישהו אחר כבר לקח אותו — בוחרים שם חדש
+  const owner = await nameOwner(prof.name);
+  if (owner && owner !== prof.id) { const old = prof.name; prof.name = ""; saveProf(); $("wName").value = ""; askName("השם \"" + old + "\" כבר תפוס אצל מישהו אחר 🙁 בחר שם חדש."); return; }
+  if (!owner) claimName(prof.name);
+  presenceSay();
+}
+function onPresenceMsg(topic, payload) {
+  const s = payload.toString();
+  if (topic.startsWith(PRES_ROOT + "presence/")) {
+    const id = topic.split("/").pop();
+    if (id === prof.id) return;
+    let m = null; try { m = s ? JSON.parse(s) : null; } catch (e) {}
+    if (!m || Date.now() - (m.t || 0) > 70000) delete PRES.list[id]; else PRES.list[id] = { ...m, seen: Date.now() };
+    paintOnlineList();
+    return;
+  }
+  if (!topic.startsWith(PRES_ROOT + "inbox/")) return;
+  let m; try { m = JSON.parse(s); } catch (e) { return; }
+  if (m.type === "invite") { PRES.pending = PRES.pending.filter((x) => x.from.id !== m.from.id).concat(m); nextInvite(); }
+  else if (m.type === "decline" && !$("lobby").hidden) { $("inviteNote").textContent = m.name + ": לא עכשיו 🙁"; $("inviteNote").hidden = false; }
 }
 function paintOnlineList() {
-  const box = $("onlineList"); if (!box || $("lobby").hidden) return;
   const people = Object.values(PRES.list).sort((a, b) => (a.st === "playing") - (b.st === "playing") || a.name.localeCompare(b.name, "he"));
+  const hb = $("homeList");
+  if (hb && !$("joinBox").hidden) {
+    hb.innerHTML = people.length ? "" : `<div class="note">אף אחד עוד לא מחובר עכשיו.</div>`;
+    for (const p of people) {
+      const row = document.createElement("div"); row.className = "pitem"; row.append(avEl(p.av, 34));
+      const t = document.createElement("span"); t.className = "nm"; t.textContent = p.name + " ";
+      const st = document.createElement("span"); st.className = "st"; st.textContent = (p.st === "playing" ? "🎮 " : p.st === "lobby" ? "⏳ " : "🏠 ") + (ST_NAME[p.st] || ST_NAME.home) + " · דרגה " + (p.lvl || 1);
+      t.append(document.createElement("br"), st); row.append(t); hb.append(row);
+    }
+  }
+  const box = $("onlineList"); if (!box || $("lobby").hidden) return;
   box.innerHTML = "";
   if (!people.length) { box.innerHTML = `<div class="note" style="text-align:center">אין עכשיו עוד מישהו מחובר. שלח לחבר את הקוד 👆</div>`; return; }
   for (const p of people) {
     const row = document.createElement("div"); row.className = "pitem";
     row.append(avEl(p.av, 40));
     const t = document.createElement("span"); t.className = "nm"; t.textContent = p.name + " ";
-    const st = document.createElement("span"); st.className = "st"; st.textContent = "דרגה " + (p.lvl || 1) + " · " + (p.st === "playing" ? "באמצע משחק" : "מחובר");
+    const st = document.createElement("span"); st.className = "st"; st.textContent = (p.st === "playing" ? "🎮 " : p.st === "lobby" ? "⏳ " : "🏠 ") + (ST_NAME[p.st] || ST_NAME.home) + " · דרגה " + (p.lvl || 1);
     t.append(document.createElement("br"), st); row.append(t);
     const b = document.createElement("button"); b.textContent = PRES.invited[p.id] ? "הוזמן ✓" : "הזמן"; b.disabled = !!PRES.invited[p.id];
     b.onclick = () => {
       PRES.client.publish(PRES_ROOT + "inbox/" + p.id, JSON.stringify({ type: "invite", from: { id: prof.id, name: prof.name, av: prof.av, lvl: levelInfo(prof.points).lvl }, code: NET.code, what: $("lobbyTitle").textContent, t: Date.now() }), { qos: 1 });
       PRES.invited[p.id] = true; b.textContent = "הוזמן ✓"; b.disabled = true;
-      $("inviteNote").textContent = p.st === "playing" ? p.name + " באמצע משחק. ההזמנה תחכה עד שהמשחק ייגמר." : "ההזמנה נשלחה ל" + p.name + "!";
+      $("inviteNote").textContent = p.st === "playing" ? p.name + " באמצע משחק. ההזמנה תחכה עד שהמשחק ייגמר." : p.st === "lobby" ? p.name + " בחדר אחר עכשיו. ההזמנה תחכה עד שיחזור למסך הבית." : "ההזמנה נשלחה ל" + p.name + "!";
       $("inviteNote").hidden = false;
     };
     row.append(b); box.append(row);
@@ -1727,7 +1801,7 @@ function paintOnlineList() {
 }
 // הזמנה מחכה עד שחוזרים למסך הבית (כמו בבראול סטארס)
 function nextInvite() {
-  if (!PRES.pending.length || $("home").hidden || !$("invite").hidden || !$("welcome").hidden) return;
+  if (!PRES.pending.length || ($("home").hidden && $("over").hidden) || !$("invite").hidden || !$("welcome").hidden || document.hidden) return;
   const m = PRES.pending.shift();
   if (Date.now() - (m.t || 0) > 10 * 60000) return nextInvite();
   const a = $("invAv"); a.innerHTML = ""; a.append(avEl(m.from.av, 72));
@@ -1744,7 +1818,9 @@ function nextInvite() {
 // מעדכנים "באמצע משחק / בבית" כשעוברים מסך
 new MutationObserver(() => { presenceSay(); if (!$("lobby").hidden) { PRES.invited = {}; $("inviteNote").hidden = true; paintOnlineList(); } })
   .observe($("lobby"), { attributes: true, attributeFilter: ["hidden"] });
-new MutationObserver(() => presenceSay()).observe($("game"), { attributes: true, attributeFilter: ["hidden"] });
+for (const s of ["game", "home", "over"]) new MutationObserver(() => { presenceSay(); if (s === "home") paintOnlineList(); }).observe($(s), { attributes: true, attributeFilter: ["hidden"] });
+document.addEventListener("visibilitychange", () => { if (!document.hidden) setTimeout(nextInvite, 400); });
+$("modes").addEventListener("click", () => setTimeout(paintOnlineList, 0));
 presenceStart();
 
 // ---------- ניצחון ----------
