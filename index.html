@@ -9,9 +9,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="הצ'יטה">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/favicon-cheetah2.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon-cheetah2.png">
-<script>window.HAZIRA_IS_APP = true; window.HAZIRA_VERSION = "1790550560521";</script>
+<link rel="icon" href="icons/favicon-cheetah3.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon-cheetah3.png">
+<script>window.HAZIRA_IS_APP = true; window.HAZIRA_VERSION = "1790579381988";</script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
 <body>
@@ -46,7 +46,7 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
 .row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 
 /* ---------- בית ---------- */
-#home{max-width:900px;margin:0 auto;padding-block:22px 40px;display:flex;flex-direction:column;gap:22px}
+#home{position:relative;max-width:900px;margin:0 auto;padding-block:22px 40px;display:flex;flex-direction:column;gap:22px}
 .logo{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
 .logo h1{font-family:var(--display);font-size:clamp(48px,14vw,84px);margin:0;line-height:.9;filter:drop-shadow(0 3px 0 rgba(26,20,5,.55));
   background:linear-gradient(90deg,var(--blue) 0 48%,var(--red) 52% 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -214,12 +214,92 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
 #over .final{font-family:var(--display);font-size:38px;direction:ltr;margin:8px 0 22px}
 #over .final .b{color:var(--blue)}#over .final .r{color:var(--red)}
 #confetti{position:absolute;inset:0;pointer-events:none}
+/* ---------- פתיחה (למעלה במסך הבית) ---------- */
+.hero{position:relative;height:238px;border-radius:22px;overflow:hidden;cursor:pointer;user-select:none;-webkit-user-select:none;
+  background:radial-gradient(ellipse at 30% 30%,#6B4A00 0%,#2A1C02 55%,#0D0802 100%);box-shadow:0 6px 18px rgba(26,20,5,.35)}
+.hero .speed{position:absolute;inset:0;pointer-events:none}
+.hero .speed i{position:absolute;height:3px;border-radius:2px;background:linear-gradient(90deg,transparent,#FFD24D);opacity:0}
+.hero .speed i:nth-child(1){top:22%;width:30%}.hero .speed i:nth-child(2){top:34%;width:44%}.hero .speed i:nth-child(3){top:46%;width:26%}
+.hero .speed i:nth-child(4){top:58%;width:38%}.hero .speed i:nth-child(5){top:28%;width:18%}.hero .speed i:nth-child(6){top:52%;width:22%}
+.hero .bolts{position:absolute;top:18px;left:calc(50% + 40px);width:170px;height:90px;opacity:0;filter:drop-shadow(0 0 6px #FFC400)}
+.hero .runner{position:absolute;top:22px;left:calc(50% - 85px);width:170px;height:87px;overflow:visible}
+.hero .runner .legsB{display:none}
+.hero .runner.b .legsA{display:none}.hero .runner.b .legsB{display:inline}
+.hero .badge{position:absolute;top:14px;left:calc(50% - 48px);width:96px;height:96px;border-radius:24px;opacity:0;box-shadow:0 0 0 3px #FFC400,0 0 24px rgba(255,196,0,.6)}
+.hero .ttl{position:absolute;top:116px;inset-inline:0;margin:0;text-align:center;font-family:var(--display);font-weight:400;font-size:clamp(46px,14vw,64px);line-height:1;direction:rtl}
+.hero .ttl span{display:inline-block;color:transparent;-webkit-text-stroke:2px #1A1405;opacity:0;
+  background:radial-gradient(circle at 30% 35%,#1A1405 0 3px,transparent 4px) 0 0/24px 20px,radial-gradient(circle at 75% 70%,#1A1405 0 2.5px,transparent 3.5px) 0 0/17px 15px,linear-gradient(180deg,#FFE27A,#F5B400);
+  -webkit-background-clip:text;background-clip:text}
+.hero .sub{position:absolute;top:190px;inset-inline:0;display:flex;justify-content:center;gap:8px;font-family:var(--display);font-size:20px;color:#FFE27A}
+.hero .sub span{opacity:0;display:inline-block}
+@media (prefers-reduced-motion:reduce){.hero .badge,.hero .ttl span,.hero .sub span{opacity:1!important}.hero .runner,.hero .bolts{display:none}}
+/* ---------- פרופיל, נקודות ודרגות ---------- */
+.av{border-radius:50%;display:grid;place-items:center;overflow:hidden;flex:none;line-height:1;background:var(--avbg,#FFE27A)}
+.av img{width:100%;height:100%;object-fit:cover}
+.ringwrap{position:relative;display:grid;place-items:center}
+.ringwrap svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.ringwrap .track{stroke:rgba(26,20,5,.18)}
+.ringwrap .prog{stroke:var(--blue);stroke-linecap:round;transition:stroke-dashoffset .8s ease}
+.lvl{position:absolute;bottom:-4px;inset-inline-start:-4px;background:var(--ink);color:#FFC400;font-family:var(--display);border-radius:999px;min-width:26px;height:26px;padding:0 6px;display:grid;place-items:center;font-size:15px;border:2px solid var(--ground)}
+.profcorner{position:absolute;top:32px;inset-inline-end:28px;z-index:3;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;padding:0}
+.ptsdot{background:#FFC400;color:#1A1405;border:2px solid #1A1405;border-radius:999px;padding:2px 9px;font-family:var(--display);font-size:14px;white-space:nowrap}
+#profile{max-width:640px;margin:0 auto;padding-block:18px 40px;display:flex;flex-direction:column;gap:16px}
+.profhead{display:flex;gap:16px;align-items:center}
+.profhead input{font:inherit;font-family:var(--display);font-size:24px;background:var(--stage);border:2px solid var(--line);border-radius:12px;padding:6px 10px;width:100%;color:var(--ink)}
+.lvlbar{background:var(--stage);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:6px}
+.lvlbar .bar{height:12px;border-radius:6px;background:rgba(26,20,5,.12);overflow:hidden}
+.lvlbar .bar i{display:block;height:100%;background:var(--blue);width:0;transition:width .8s}
+.avgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:8px}
+.avgrid button{all:unset;cursor:pointer;display:grid;place-items:center;border-radius:50%;border:3px solid transparent}
+.avgrid button[aria-pressed="true"]{border-color:var(--ink)}
+.plist{display:grid;gap:8px;width:min(420px,100%)}
+.pitem{display:flex;align-items:center;gap:10px;background:var(--stage);border:2px solid var(--line);border-radius:14px;padding:8px 10px;text-align:start;font-size:17px}
+.pitem .nm{flex:1;font-weight:700}
+.pitem .st{font-size:13px;color:var(--muted)}
+.pitem button{border:0;border-radius:10px;padding:8px 12px;font-family:var(--display);font-size:16px;background:var(--ink);color:#FFC400}
+.pitem button:disabled{opacity:.55}
+.plus{position:fixed;left:50%;top:18%;transform:translateX(-50%);font-family:var(--display);font-size:34px;color:var(--ink);background:#FFE27A;border:3px solid var(--ink);border-radius:999px;padding:4px 18px;z-index:20;pointer-events:none;animation:plusUp 1.3s ease-out forwards}
+@keyframes plusUp{0%{opacity:0;transform:translate(-50%,20px) scale(.7)}20%{opacity:1;transform:translate(-50%,0) scale(1.1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-40px)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
 <!-- בית -->
 <section id="home" class="screen">
-  <div class="logo"><h1>הצ'יטה</h1><span>🐆 ראש בראש</span></div>
+  <button class="profcorner" id="profBtn" aria-label="הפרופיל שלי"><span class="ringwrap" id="profRing"></span><span class="ptsdot" id="ptsDot">0 ⭐</span></button>
+  <!-- פתיחה: הצ'יטה רצה עם ברקים, קופצת לתוך הלוגו, ואז השם מופיע. לחיצה = מההתחלה -->
+  <div class="hero" id="hero" role="button" tabindex="0" aria-label="הצ'יטה · ראש בראש · זריזות · מחשבה (לחצו כדי לראות שוב)">
+    <div class="speed" id="speed" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <svg class="bolts" id="bolts" viewBox="0 0 200 100" aria-hidden="true">
+      <polyline points="0,20 40,30 30,42 80,50 70,60 120,64" fill="none" stroke="#FFE27A" stroke-width="3" stroke-linejoin="bevel"/>
+      <polyline points="10,78 55,70 48,84 100,76" fill="none" stroke="#FFF3C4" stroke-width="2"/>
+    </svg>
+    <svg class="runner" id="runner" viewBox="40 120 470 240" aria-hidden="true">
+      <defs>
+        <linearGradient id="fur" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD24D"/><stop offset="1" stop-color="#D99A00"/></linearGradient>
+        <clipPath id="furClip"><path id="cbody" d="M 60 198 C 62 180 78 168 96 167 C 100 157 108 151 115 153 C 120 155 121 164 118 170 C 140 170 160 176 184 184 C 242 196 300 190 350 178 C 372 173 392 176 408 184 C 440 188 470 176 490 150 C 496 142 507 146 502 157 C 488 190 456 207 420 205 C 424 225 410 248 385 256 C 350 256 312 246 272 250 C 240 254 214 274 188 270 C 160 262 146 240 136 226 C 120 216 100 214 86 213 C 74 212 62 208 60 198 Z"/></clipPath>
+      </defs>
+      <g class="bob">
+        <g class="legsA" stroke-linecap="round" fill="none">
+          <g stroke="#1A1405"><path d="M 184 246 L 128 284 L 62 300" stroke-width="30"/><path d="M 200 256 L 152 312 L 112 336" stroke-width="24"/><path d="M 384 218 L 440 270 L 470 296 L 500 304" stroke-width="40"/><path d="M 372 232 L 414 294 L 438 324" stroke-width="28"/></g>
+          <g stroke="url(#fur)"><path d="M 184 246 L 128 284 L 62 300" stroke-width="22"/><path d="M 200 256 L 152 312 L 112 336" stroke-width="16"/><path d="M 384 218 L 440 270 L 470 296 L 500 304" stroke-width="32"/><path d="M 372 232 L 414 294 L 438 324" stroke-width="20"/></g>
+        </g>
+        <g class="legsB" stroke-linecap="round" fill="none">
+          <g stroke="#1A1405"><path d="M 184 246 L 205 300 L 240 330" stroke-width="30"/><path d="M 200 256 L 180 306 L 205 338" stroke-width="24"/><path d="M 384 218 L 330 268 L 296 300" stroke-width="40"/><path d="M 372 232 L 350 292 L 318 322" stroke-width="28"/></g>
+          <g stroke="url(#fur)"><path d="M 184 246 L 205 300 L 240 330" stroke-width="22"/><path d="M 200 256 L 180 306 L 205 338" stroke-width="16"/><path d="M 384 218 L 330 268 L 296 300" stroke-width="32"/><path d="M 372 232 L 350 292 L 318 322" stroke-width="20"/></g>
+        </g>
+        <use href="#cbody" fill="url(#fur)" stroke="#1A1405" stroke-width="6"/>
+        <g clip-path="url(#furClip)" fill="#1A1405">
+          <circle cx="230" cy="215" r="7"/><circle cx="262" cy="232" r="6"/><circle cx="298" cy="212" r="7"/><circle cx="330" cy="232" r="6"/><circle cx="352" cy="203" r="6"/>
+          <circle cx="210" cy="240" r="5"/><circle cx="282" cy="240" r="5"/><circle cx="385" cy="222" r="6"/><circle cx="178" cy="212" r="5"/><circle cx="440" cy="198" r="4"/><circle cx="470" cy="184" r="4"/>
+        </g>
+        <circle cx="88" cy="186" r="6" fill="#1A1405"/>
+        <path d="M 90 192 Q 92 202 80 210" stroke="#1A1405" stroke-width="4" fill="none" stroke-linecap="round"/>
+      </g>
+    </svg>
+    <img class="badge" id="badge" alt="" src="data:image/webp;base64,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">
+    <h1 class="ttl" id="ttl"><span>ה</span><span>צ</span><span>'</span><span>י</span><span>ט</span><span>ה</span></h1>
+    <div class="sub" id="sub"><span>ראש בראש</span><span>·</span><span>זריזות</span><span>·</span><span>מחשבה</span></div>
+  </div>
   <div class="install" id="installBox">
     <a class="go" id="installBtn" href="https://dandooger.github.io/hazira/" target="_blank" rel="noopener">📲 התקן אפליקציה</a>
     <span class="note" id="installNote">פותח את האפליקציה באתר שלה. שם לוחצים שוב "התקן אפליקציה", והיא תופיע כאייקון בטלפון.</span>
@@ -281,7 +361,21 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
     <div class="note" id="lobbyNote">שלח לחבר את הקוד. הוא פותח את האפליקציה, בוחר "אונליין" ומקליד אותו.</div>
     <div class="row" style="justify-content:center"><button class="go" id="shareCode">📤 שלח לחבר</button><button class="ghost" id="lobbyCancel">ביטול</button></div>
     <div class="spinner" style="width:40px;height:40px;border-width:5px"></div>
+    <h2 style="font-size:20px">או הזמן מי שמחובר עכשיו:</h2>
+    <div class="plist" id="onlineList"></div>
+    <div class="note" id="inviteNote" hidden></div>
   </div>
+</section>
+
+<!-- פרופיל -->
+<section id="profile" class="screen" hidden>
+  <div class="row" style="justify-content:space-between"><h2>הפרופיל שלי</h2><button class="ghost" id="profBack">חזרה ←</button></div>
+  <div class="profhead"><span class="ringwrap" id="profBig"></span><input id="profName" maxlength="14" autocomplete="off" aria-label="שם משתמש"></div>
+  <div class="lvlbar"><b id="profLvl"></b><div class="bar"><i id="profBar"></i></div><span class="note" id="profNext"></span></div>
+  <h2 style="font-size:20px">בחר תמונה</h2>
+  <div class="row"><button class="go" id="profPhoto">🖼️ תמונה מהגלריה</button><input type="file" id="profFile" accept="image/*" hidden></div>
+  <div class="note">תמונה מהגלריה נשמרת רק בטלפון שלך. חברים באונליין רואים רק את התמונות המוכנות.</div>
+  <div class="avgrid" id="avGrid"></div>
 </section>
 
 <!-- טעינה -->
@@ -328,6 +422,38 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
   </div>
 </div>
 
+<!-- כניסה ראשונה: איך קוראים לך -->
+<div class="modal" id="welcome" hidden>
+  <div class="card" role="dialog" aria-labelledby="wH">
+    <h3 id="wH">🐆 ברוך הבא לצ'יטה!</h3>
+    <div class="note">איך אתה רוצה שיקראו לך? זה השם שחברים יראו באונליין.</div>
+    <input id="wName" maxlength="14" placeholder="השם שלך" autocomplete="off">
+    <div class="note">בחר תמונה (אפשר לשנות אחר כך בפרופיל):</div>
+    <div class="avgrid" id="wGrid" style="max-height:170px;overflow:auto"></div>
+    <div class="err" id="wErr" hidden>צריך לכתוב שם 🙂</div>
+    <div class="row"><button class="go" id="wGo">יאללה, מתחילים!</button></div>
+  </div>
+</div>
+
+<!-- הזמנה למשחק -->
+<div class="modal" id="invite" hidden>
+  <div class="card" role="dialog" aria-labelledby="invH" style="text-align:center;justify-items:center">
+    <span id="invAv"></span>
+    <h3 id="invH"></h3>
+    <div class="note" id="invWhat"></div>
+    <div class="row" style="justify-content:center"><button class="go" id="invYes">✓ הצטרף</button><button class="ghost" id="invNo">לא עכשיו</button></div>
+  </div>
+</div>
+
+<!-- עלית דרגה -->
+<div class="modal" id="lvlUp" hidden>
+  <div class="card" style="text-align:center;justify-items:center">
+    <span id="lvlUpAv"></span>
+    <h3 id="lvlUpT"></h3>
+    <div class="row" style="justify-content:center"><button class="go" id="lvlUpOk">איזה כיף! 🎉</button></div>
+  </div>
+</div>
+
 <!-- איך מתקינים -->
 <div class="modal" id="installHelp" hidden>
   <div class="card" role="dialog" aria-labelledby="iH">
@@ -349,7 +475,7 @@ h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0}
 
 <script>
 const $ = (id) => document.getElementById(id);
-const show = (id) => { for (const s of ["home", "loading", "lobby", "game", "over"]) $(s).hidden = s !== id; };
+const show = (id) => { for (const s of ["home", "loading", "lobby", "game", "over", "profile"]) $(s).hidden = s !== id; if (id === "home" && window.nextInvite) setTimeout(nextInvite, 400); };
 
 // ---------- צלילים ----------
 let ac;
@@ -510,6 +636,7 @@ function buildBuzzers(keys) {
     const b = document.createElement("button");
     b.className = "buzz " + k; b.id = "b" + C; b.setAttribute("aria-label", p.name + " לוחץ");
     b.innerHTML = `<span class="who">${p.name}</span><span class="score" id="sc${C}">0</span><span class="bar"><i id="bar${C}"></i></span><span class="vs" hidden></span><span class="tap">לחץ!</span>`;
+    if (k === "blue" && G.mode === "duo" && prof.name) b.querySelector(".who").textContent = "🔵 " + prof.name; // הכחול זה אני (מקבל נקודות)
     b.addEventListener("pointerdown", (e) => { e.preventDefault(); if (G.mode === "online") onlineBuzz(); else buzz(k); });
     return b;
   };
@@ -807,6 +934,7 @@ function score(correct) {
   const winner = correct ? G.buzzer : two ? other(G.buzzer) : null, loser = winner ? null : G.buzzer;
   const lost = loser && G.score[loser] > 0;
   if (winner) G.score[winner]++; else if (lost) G.score[loser]--;
+  if (correct && G.buzzer === "blue") awardPoints(POINTS_PER_CORRECT); // הכחול זה אני
   paintScore();
   const side = btn(winner || loser);
   side.classList.remove("pop"); void side.offsetWidth; side.classList.add("pop");
@@ -1088,7 +1216,7 @@ function soloResult(ok, text) {
   const s = G.solo;
   G.phase = "scored";
   if (!$("stage").querySelector(".answer")) showAnswerOnStage();
-  if (ok) s.ok++; else s.no++;
+  if (ok) { s.ok++; awardPoints(POINTS_PER_CORRECT); } else s.no++;
   paintSolo();
   flash(ok, ok ? "✓ נכון!" : text ? "✗ טעות" : "⏰ לא ענית");
   acts(ok ? "יפה! ✓" : text ? `אמרת: "${escapeHtml(text)}"` : "");
@@ -1179,8 +1307,8 @@ $("shareCode").onclick = async () => {
   const text = "בוא לשחק איתי בצ'יטה! 🐆 🔵🆚🔴 הקוד: " + NET.code + "\nhttps://dandooger.github.io/hazira/";
   try { if (navigator.share) await navigator.share({ text }); else { await navigator.clipboard.writeText(text); $("lobbyNote").textContent = "הקוד הועתק! הדבק אותו בוואטסאפ לחבר."; } } catch (e) {}
 };
-$("joinGo").onclick = async () => {
-  const code = $("joinCode").value.replace(/\D/g, "");
+$("joinGo").onclick = () => joinRoom($("joinCode").value.replace(/\D/g, ""));
+async function joinRoom(code) {
   $("joinErr").hidden = true;
   if (code.length !== 5 || !BROKERS[+code[0] - 1]) { $("joinErr").textContent = "הקוד צריך להיות 5 ספרות."; $("joinErr").hidden = false; return; }
   $("loadMsg").textContent = "מתחבר לחדר…"; show("loading");
@@ -1188,9 +1316,10 @@ $("joinGo").onclick = async () => {
     await netOpen(code, +code[0] - 1);
     NET.role = "guest"; O.joinTimer = setTimeout(() => { if (!O.started) { netLeave(); show("home"); $("joinErr").textContent = "לא מצאתי חדר עם הקוד הזה. בדקו אותו ונסו שוב."; $("joinErr").hidden = false; } }, 9000);
     O.started = false;
-    send("join", {});
+    send("join", { name: prof.name });
   } catch (e) { show("home"); $("joinErr").textContent = "לא הצלחתי להתחבר. בדקו שיש אינטרנט."; $("joinErr").hidden = false; }
-};
+}
+const friend = () => O.themName || "החבר";
 
 // מי אני ומי החבר (המארח כחול, המצטרף אדום)
 const myColor = () => (NET.role === "host" ? "blue" : "red");
@@ -1201,12 +1330,12 @@ function paintOnline() {
   const mine = O.score[meKey()], theirs = O.score[themKey()], C = cap(myColor());
   $("sc" + C).textContent = mine;
   $("bar" + C).style.width = Math.min(100, mine / O.target * 100) + "%";
-  btn(myColor()).querySelector(".vs").textContent = "החבר: " + theirs;
+  btn(myColor()).querySelector(".vs").textContent = friend() + ": " + theirs;
 }
 function startOnlineScreen() {
   setPanels("online", [myColor()]);
   const mine = btn(myColor());
-  mine.querySelector(".who").textContent = "אני"; mine.querySelector(".vs").hidden = false;
+  mine.querySelector(".who").textContent = prof.name || "אני"; mine.querySelector(".vs").hidden = false;
   $("gTitle").textContent = O.title;
   paintOnline(); show("game"); keepAwake();
 }
@@ -1221,7 +1350,7 @@ async function itemFromRef(ref) {
 function hostStart() {
   O.score = { host: 0, guest: 0 }; O.n = 0; O.title = O.deck.icon + " " + O.deck.name + " · " + O.deck.levelName;
   O.queue = deckOrder(O.deck.items, O.deck.reserve); O.reserve = [];
-  send("start", { title: O.title, target: O.target, score: O.score });
+  send("start", { title: O.title, target: O.target, score: O.score, name: prof.name });
   startOnlineScreen();
   later(hostRound, 800);
 }
@@ -1341,7 +1470,7 @@ function onAnswering(who) {
       acts("אמרת: \"" + escapeHtml(typed || "…") + "\". בודק…");
       if (NET.role === "host") hostGotAnswer(texts, O.n); else send("answer", { n: O.n, texts });
     }, G.item);
-  } else acts("החבר עונה… ⏳");
+  } else acts(friend() + " עונה… ⏳");
   // ביטחון: אם המארח לא קיבל תשובה אחרי 20 שניות — טעות
   if (NET.role === "host") later(() => { if (!O.result && !O.pending) hostFinish(false, ""); }, 20000);
 }
@@ -1366,6 +1495,7 @@ function showResult(m) {
   else {
     const answererIsMe = m.answerer === NET.role;
     flash(m.ok, m.ok ? (answererIsMe ? "✓ צדקת!" : "✓ נכון!") : m.text ? "✗ טעות" : "⏰ נגמר הזמן");
+    if (m.ok && answererIsMe) awardPoints(POINTS_PER_CORRECT);
     O.resultLine = (answererIsMe ? "ענית" : "החבר ענה") + (m.text ? `: "${escapeHtml(m.text)}"` : "") + " · נקודה " + (m.point === NET.role ? "לך! 🎉" : "לחבר");
   }
   if (m.final) { acts(O.resultLine); return; }
@@ -1378,7 +1508,7 @@ function readyActs() {
   const me = O.ready[meKey()], them = O.ready[themKey()];
   acts(`<span style="flex-basis:100%">${O.resultLine}</span>
     <button class="act big ${me ? "good" : ""}" data-a="ready">${me ? "✓ אני מוכן (לחץ לביטול)" : "✋ מוכן"}</button>
-    <span class="note">החבר: ${them ? "מוכן ✓" : "עוד לא מוכן…"}</span>`);
+    <span class="note">${escapeHtml(friend())}: ${them ? "מוכן ✓" : "עוד לא מוכן…"}</span>`);
 }
 function onlineReady() {
   if (G.phase !== "ready") return;
@@ -1396,7 +1526,7 @@ function onlineOver(w) {
 function onNet(m) {
   if (m.type === "bye") { if (NET.role && !$("game").hidden) { clearTimers(); acts("החבר יצא מהמשחק 👋"); } return; }
   if (NET.role === "host") {
-    if (m.type === "join" && !O.joined) { O.joined = true; hostStart(); }
+    if (m.type === "join" && !O.joined) { O.joined = true; O.themName = m.name || ""; hostStart(); }
     else if (m.type === "buzz") hostGotBuzz("guest", m.rt, m.n);
     else if (m.type === "answer") hostGotAnswer(m.texts || [], m.n);
     else if (m.type === "decide" && m.n === O.n && O.pending) { const t = O.pending.text; O.pending = null; hostFinish(!!m.ok, t); }
@@ -1405,7 +1535,7 @@ function onNet(m) {
     return;
   }
   // המצטרף
-  if (m.type === "start") { O.started = true; clearTimeout(O.joinTimer); O.title = m.title; O.target = m.target; O.score = m.score; startOnlineScreen(); }
+  if (m.type === "start") { O.started = true; clearTimeout(O.joinTimer); O.title = m.title; O.target = m.target; O.score = m.score; O.themName = m.name || ""; startOnlineScreen(); }
   else if (m.type === "round") playRound(m);
   else if (m.type === "answering" && m.n === O.n) onAnswering(m.who);
   else if (m.type === "confirm" && m.n === O.n) onConfirm(m.judge, m.text, m.reason);
@@ -1414,6 +1544,230 @@ function onNet(m) {
   else if (m.type === "readyState" && m.n === O.n) { O.ready = m.ready; readyActs(); }
   else if (m.type === "over") onlineOver(m.winner);
 }
+
+// ---------- פתיחה: הצ'יטה רצה ~2.5 שניות עם ברקים, קופצת ללוגו, ואז השם והמילים ----------
+const INTRO = { timers: [], legs: null };
+function playIntro() {
+  const hero = $("hero"), runner = $("runner"), badge = $("badge"), bolts = $("bolts");
+  INTRO.timers.forEach(clearTimeout); INTRO.timers = []; clearInterval(INTRO.legs);
+  hero.querySelectorAll("*").forEach((el) => el.getAnimations().forEach((a) => a.cancel()));
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const at = (ms, fn) => INTRO.timers.push(setTimeout(fn, ms));
+  runner.style.display = ""; runner.style.opacity = "1";
+  // רצה: נכנסת מהצד, הרגליים מתחלפות, הגוף קופץ קצת, קווי מהירות וברקים מאחור
+  runner.animate([{ transform: "translateX(70vw)" }, { transform: "translateX(0)" }], { duration: 650, easing: "cubic-bezier(.2,.8,.3,1)" });
+  runner.querySelector(".bob").animate([{ transform: "translateY(0)" }, { transform: "translateY(-10px)" }, { transform: "translateY(0)" }], { duration: 200, iterations: Infinity });
+  INTRO.legs = setInterval(() => runner.classList.toggle("b"), 100);
+  hero.querySelectorAll(".speed i").forEach((s, i) => s.animate([{ right: "-50%", opacity: 0 }, { opacity: 0.9, offset: 0.2 }, { right: "130%", opacity: 0 }], { duration: 420 + i * 60, delay: i * 70, iterations: Infinity }));
+  bolts.animate([{ opacity: 0 }, { opacity: 1 }, { opacity: 0.2 }, { opacity: 1 }, { opacity: 0 }], { duration: 380, iterations: Infinity });
+  // קופצת לתוך הלוגו
+  at(2500, () => {
+    clearInterval(INTRO.legs); runner.classList.remove("b");
+    runner.getAnimations({ subtree: true }).forEach((a) => a.cancel());
+    hero.querySelectorAll(".speed i").forEach((s) => s.getAnimations().forEach((a) => a.cancel()));
+    bolts.getAnimations().forEach((a) => a.cancel());
+    runner.animate([{ transform: "translate(0,0) rotate(0) scale(1)", opacity: 1 }, { transform: "translate(0,-38px) rotate(-12deg) scale(.8)", opacity: 1, offset: 0.45 },
+      { transform: "translate(0,-4px) rotate(0) scale(.3)", opacity: 0 }], { duration: 560, easing: "ease-in", fill: "forwards" });
+    sfx.go && sfx.go();
+  });
+  at(2950, () => {
+    badge.animate([{ opacity: 0, transform: "scale(.2) rotate(-20deg)" }, { opacity: 1, transform: "scale(1.18) rotate(4deg)", offset: 0.6 }, { opacity: 1, transform: "scale(1)" }],
+      { duration: 560, easing: "cubic-bezier(.3,1.5,.5,1)", fill: "forwards" });
+    badge.animate([{ boxShadow: "0 0 0 3px #FFC400, 0 0 60px #FFE27A" }, { boxShadow: "0 0 0 3px #FFC400, 0 0 24px rgba(255,196,0,.6)" }], { duration: 900, delay: 300 });
+  });
+  // "הצ'יטה" אות אחרי אות, ואז "ראש בראש · זריזות · מחשבה"
+  $("ttl").querySelectorAll("span").forEach((s, i) => at(3350 + i * 95, () => s.animate(
+    [{ opacity: 0, transform: "translateY(26px) scale(.3) rotate(-18deg)" }, { opacity: 1, transform: "translateY(-6px) scale(1.15) rotate(4deg)", offset: 0.65 }, { opacity: 1, transform: "none" }],
+    { duration: 480, easing: "ease-out", fill: "forwards" })));
+  $("sub").querySelectorAll("span").forEach((s, i) => at(4050 + i * 230, () => s.animate(
+    [{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }], { duration: 380, easing: "ease-out", fill: "forwards" })));
+}
+$("hero").addEventListener("click", playIntro);
+$("hero").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); playIntro(); } });
+playIntro();
+
+// ---------- פרופיל: שם, תמונה, נקודות ודרגות ----------
+// כל תשובה נכונה = 10 נקודות. מדרגה 1 ל-2 צריך 100, מ-2 ל-3 עוד 200, מ-3 ל-4 עוד 300, וכן הלאה
+const POINTS_PER_CORRECT = 10;
+const AVATARS = ["🐆","🦁","🐯","🐼","🐨","🐸","🐵","🦊","🐶","🐱","🐰","🐻","🐷","🐮","🐔","🐧","🦄","🐲","🦖","🐙","🦈","🐬","🦋","🐝","🦉","🦅","🐢","🦒",
+  "⚽","🏀","🎾","🏈","🏐","🏓","🥊","🛹","🎮","👾","🤖","👽","🚀","🛸","⭐","🌈","🔥","⚡","💎","👑","🎸","🎧","🎨","🍕","🍩","🍦","🍓","🍉","🌮","🧁",
+  "😎","🤩","😜","🥳","🤠","🧙","👸","🦸","🥷","🧜‍♀️","🧚","🏆"];
+const AV_BG = ["#FFE27A","#BFE3FF","#FFC9D6","#C9F2D0","#E3D2FF","#FFD9B0","#D6F0F0","#F2F2F2"];
+const PROF_KEY = "hazira-profile-v1";
+let prof = null;
+try { prof = JSON.parse(localStorage.getItem(PROF_KEY) || "null"); } catch (e) { prof = null; }
+if (!prof || !prof.id) prof = { id: Math.random().toString(36).slice(2, 10), name: "", av: 0, photo: null, points: 0 };
+const saveProf = () => { try { localStorage.setItem(PROF_KEY, JSON.stringify(prof)); } catch (e) {} };
+function levelInfo(points) {
+  let lvl = 1, left = points, need = 100;
+  while (left >= need) { left -= need; lvl++; need = 100 * lvl; }
+  return { lvl, have: left, need, pct: left / need };
+}
+// תמונת פרופיל: אימוג'י על עיגול צבעוני, או תמונה מהגלריה (רק אצלי)
+function avEl(av, size, photo) {
+  const d = document.createElement("span");
+  d.className = "av"; d.style.width = d.style.height = size + "px"; d.style.fontSize = Math.round(size * 0.58) + "px";
+  if (photo) { const i = document.createElement("img"); i.src = photo; i.alt = ""; d.append(i); }
+  else { const k = Math.max(0, Math.min(AVATARS.length - 1, av | 0)); d.textContent = AVATARS[k]; d.style.setProperty("--avbg", AV_BG[k % AV_BG.length]); }
+  return d;
+}
+// תמונה עם עיגול אחוזים מסביב (כמה קרוב לדרגה הבאה) ומספר הדרגה
+function ringAv(host, size) {
+  const L = levelInfo(prof.points), r = size / 2 + 5, C = 2 * Math.PI * (r - 3);
+  host.innerHTML = "";
+  host.style.width = host.style.height = size + 12 + "px";
+  host.insertAdjacentHTML("beforeend", `<svg viewBox="0 0 ${2 * r + 2} ${2 * r + 2}" width="${size + 12}" height="${size + 12}"><circle class="track" cx="${r + 1}" cy="${r + 1}" r="${r - 3}" fill="none" stroke-width="5"/><circle class="prog" cx="${r + 1}" cy="${r + 1}" r="${r - 3}" fill="none" stroke-width="5" stroke-dasharray="${C}" stroke-dashoffset="${C}"/></svg>`);
+  host.append(avEl(prof.av, size, prof.photo));
+  const b = document.createElement("span"); b.className = "lvl"; b.textContent = L.lvl; host.append(b);
+  requestAnimationFrame(() => { host.querySelector(".prog").style.strokeDashoffset = C * (1 - L.pct); });
+}
+function paintProf() {
+  ringAv($("profRing"), 48);
+  $("ptsDot").textContent = prof.points + " ⭐";
+  if (!$("profile").hidden) paintProfPage();
+}
+function paintProfPage() {
+  const L = levelInfo(prof.points);
+  ringAv($("profBig"), 96);
+  $("profName").value = prof.name;
+  $("profLvl").textContent = "דרגה " + L.lvl + " · " + prof.points + " נקודות ⭐";
+  $("profBar").style.width = Math.round(L.pct * 100) + "%";
+  $("profNext").textContent = "עוד " + (L.need - L.have) + " נקודות לדרגה " + (L.lvl + 1) + " (כל תשובה נכונה = " + POINTS_PER_CORRECT + ")";
+  fillAvGrid($("avGrid"), (k) => { prof.av = k; prof.photo = null; saveProf(); paintProf(); presenceSay(); });
+}
+function fillAvGrid(grid, pick) {
+  grid.innerHTML = "";
+  AVATARS.forEach((e, k) => {
+    const b = document.createElement("button");
+    b.setAttribute("aria-label", "תמונה " + (k + 1)); b.setAttribute("aria-pressed", String(!prof.photo && prof.av === k));
+    b.append(avEl(k, 48));
+    b.onclick = () => { grid.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); pick(k); };
+    grid.append(b);
+  });
+}
+// נקודות על תשובה נכונה (לבד, ביחד — הכחול הוא אני — ובאונליין)
+function awardPoints(n) {
+  const before = levelInfo(prof.points).lvl;
+  prof.points += n; saveProf();
+  const p = document.createElement("div"); p.className = "plus"; p.textContent = "+" + n + " ⭐"; document.body.append(p); setTimeout(() => p.remove(), 1400);
+  paintProf(); presenceSay();
+  const after = levelInfo(prof.points).lvl;
+  if (after > before) setTimeout(() => {
+    const a = $("lvlUpAv"); a.innerHTML = ""; const w = document.createElement("span"); w.className = "ringwrap"; a.append(w); ringAv(w, 90);
+    $("lvlUpT").textContent = "עלית לדרגה " + after + "! 🎉";
+    $("lvlUp").hidden = false; sfx.win();
+  }, 900);
+}
+$("lvlUpOk").onclick = () => { $("lvlUp").hidden = true; };
+$("profBtn").onclick = () => { show("profile"); paintProfPage(); };
+$("profBack").onclick = () => { show("home"); };
+$("profName").addEventListener("change", () => { const v = $("profName").value.trim(); if (v) { prof.name = v; saveProf(); presenceSay(); } else $("profName").value = prof.name; });
+$("profPhoto").onclick = () => $("profFile").click();
+$("profFile").addEventListener("change", () => {
+  const f = $("profFile").files && $("profFile").files[0]; if (!f) return;
+  const img = new Image();
+  img.onload = () => {
+    const s = 256, cv = document.createElement("canvas"); cv.width = cv.height = s;
+    const k = Math.max(s / img.width, s / img.height), w = img.width * k, h = img.height * k;
+    cv.getContext("2d").drawImage(img, (s - w) / 2, (s - h) / 2, w, h);
+    prof.photo = cv.toDataURL("image/jpeg", 0.82); saveProf(); paintProf(); URL.revokeObjectURL(img.src);
+  };
+  img.src = URL.createObjectURL(f); $("profFile").value = "";
+});
+// כניסה ראשונה: בוחרים שם ותמונה
+function askName() {
+  $("welcome").hidden = false;
+  fillAvGrid($("wGrid"), (k) => { prof.av = k; });
+  setTimeout(() => $("wName").focus(), 50);
+}
+$("wGo").onclick = () => {
+  const v = $("wName").value.trim();
+  if (!v) { $("wErr").hidden = false; return; }
+  prof.name = v; saveProf(); $("welcome").hidden = true; paintProf(); presenceStart();
+};
+$("wName").addEventListener("keydown", (e) => { if (e.key === "Enter") $("wGo").click(); });
+paintProf();
+if (!prof.name) askName();
+
+// ---------- מי מחובר עכשיו + הזמנות (רק באפליקציה) ----------
+// כל אחד מפרסם "אני כאן" (שם, תמונה מוכנה, דרגה, אם הוא באמצע משחק). הזמנה נשלחת לתיבה של החבר.
+const PRES = { client: null, list: {}, pending: [], invited: {}, timer: null };
+const PRES_ROOT = "hazira-dg/v1/";
+const myStatus = () => (!$("game").hidden || !$("over").hidden ? "playing" : !$("lobby").hidden ? "lobby" : "home");
+function presenceSay() {
+  if (!PRES.client || !PRES.client.connected || !prof.name) return;
+  PRES.client.publish(PRES_ROOT + "presence/" + prof.id, JSON.stringify({ id: prof.id, name: prof.name, av: prof.av, lvl: levelInfo(prof.points).lvl, st: myStatus(), t: Date.now() }), { retain: true, qos: 1 });
+}
+async function presenceStart() {
+  if (!IS_APP || !prof.name || PRES.client) return;
+  try { await loadMqtt(); } catch (e) { return; }
+  const c = window.mqtt.connect(BROKERS[0], { clientId: "hz_" + prof.id + "_" + Math.random().toString(36).slice(2, 6), reconnectPeriod: 4000, keepalive: 30,
+    will: { topic: PRES_ROOT + "presence/" + prof.id, payload: "", retain: true, qos: 1 } });
+  PRES.client = c;
+  c.on("connect", () => {
+    c.subscribe([PRES_ROOT + "presence/+", PRES_ROOT + "inbox/" + prof.id], { qos: 1 });
+    presenceSay();
+  });
+  c.on("error", () => {});
+  c.on("message", (topic, payload) => {
+    const s = payload.toString();
+    if (topic.startsWith(PRES_ROOT + "presence/")) {
+      const id = topic.split("/").pop();
+      if (id === prof.id) return;
+      let m = null; try { m = s ? JSON.parse(s) : null; } catch (e) {}
+      if (!m || Date.now() - (m.t || 0) > 5 * 60000) delete PRES.list[id]; else PRES.list[id] = { ...m, seen: Date.now() };
+      paintOnlineList();
+      return;
+    }
+    let m; try { m = JSON.parse(s); } catch (e) { return; }
+    if (m.type === "invite") { PRES.pending = PRES.pending.filter((x) => x.from.id !== m.from.id).concat(m); nextInvite(); }
+    else if (m.type === "decline" && !$("lobby").hidden) { $("inviteNote").textContent = m.name + ": לא עכשיו 🙁"; $("inviteNote").hidden = false; }
+  });
+  clearInterval(PRES.timer);
+  PRES.timer = setInterval(() => { presenceSay(); for (const [id, p] of Object.entries(PRES.list)) if (Date.now() - p.seen > 3 * 60000) delete PRES.list[id]; paintOnlineList(); }, 60000);
+}
+function paintOnlineList() {
+  const box = $("onlineList"); if (!box || $("lobby").hidden) return;
+  const people = Object.values(PRES.list).sort((a, b) => (a.st === "playing") - (b.st === "playing") || a.name.localeCompare(b.name, "he"));
+  box.innerHTML = "";
+  if (!people.length) { box.innerHTML = `<div class="note" style="text-align:center">אין עכשיו עוד מישהו מחובר. שלח לחבר את הקוד 👆</div>`; return; }
+  for (const p of people) {
+    const row = document.createElement("div"); row.className = "pitem";
+    row.append(avEl(p.av, 40));
+    const t = document.createElement("span"); t.className = "nm"; t.textContent = p.name + " ";
+    const st = document.createElement("span"); st.className = "st"; st.textContent = "דרגה " + (p.lvl || 1) + " · " + (p.st === "playing" ? "באמצע משחק" : "מחובר");
+    t.append(document.createElement("br"), st); row.append(t);
+    const b = document.createElement("button"); b.textContent = PRES.invited[p.id] ? "הוזמן ✓" : "הזמן"; b.disabled = !!PRES.invited[p.id];
+    b.onclick = () => {
+      PRES.client.publish(PRES_ROOT + "inbox/" + p.id, JSON.stringify({ type: "invite", from: { id: prof.id, name: prof.name, av: prof.av, lvl: levelInfo(prof.points).lvl }, code: NET.code, what: $("lobbyTitle").textContent, t: Date.now() }), { qos: 1 });
+      PRES.invited[p.id] = true; b.textContent = "הוזמן ✓"; b.disabled = true;
+      $("inviteNote").textContent = p.st === "playing" ? p.name + " באמצע משחק. ההזמנה תחכה עד שהמשחק ייגמר." : "ההזמנה נשלחה ל" + p.name + "!";
+      $("inviteNote").hidden = false;
+    };
+    row.append(b); box.append(row);
+  }
+}
+// הזמנה מחכה עד שחוזרים למסך הבית (כמו בבראול סטארס)
+function nextInvite() {
+  if (!PRES.pending.length || $("home").hidden || !$("invite").hidden || !$("welcome").hidden) return;
+  const m = PRES.pending.shift();
+  if (Date.now() - (m.t || 0) > 10 * 60000) return nextInvite();
+  const a = $("invAv"); a.innerHTML = ""; a.append(avEl(m.from.av, 72));
+  $("invH").textContent = "הזמנה מ" + m.from.name + "! 🎮";
+  $("invWhat").textContent = m.what || "";
+  $("invite").hidden = false;
+  $("invYes").onclick = () => { $("invite").hidden = true; mode = "online"; paintMode(); joinRoom(m.code); };
+  $("invNo").onclick = () => {
+    $("invite").hidden = true;
+    PRES.client && PRES.client.publish(PRES_ROOT + "inbox/" + m.from.id, JSON.stringify({ type: "decline", name: prof.name }), { qos: 1 });
+    setTimeout(nextInvite, 300);
+  };
+}
+// מעדכנים "באמצע משחק / בבית" כשעוברים מסך
+new MutationObserver(() => { presenceSay(); if (!$("lobby").hidden) { PRES.invited = {}; $("inviteNote").hidden = true; paintOnlineList(); } })
+  .observe($("lobby"), { attributes: true, attributeFilter: ["hidden"] });
+new MutationObserver(() => presenceSay()).observe($("game"), { attributes: true, attributeFilter: ["hidden"] });
+presenceStart();
 
 // ---------- ניצחון ----------
 function gameOver(w) {
